@@ -8,8 +8,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import interpreter.Interpreter;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,23 +29,24 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.interpreter.interpreter.Interpreter;
+import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.commands.ExecutionException;
+import viewmodel.ViewModel;
 
-public class ViewController {
+public class ViewController implements Observer{
 	Stage connectWindow = null;
+	ViewModel vm = null;
 	File csv = null;
 	File txt = null;
 	int[][] map;
-	private Interpreter i;
+	DoubleProperty alieronVal, elevatorVal;
 	
 	//-----------------------FXML Objects-----------------------
 	@FXML
-	Button connect;
+	Button connect, textfile;
 	@FXML
-	Button textfile;
-	@FXML
-	RadioButton manual;
-	@FXML
-	RadioButton autopilot;
+	RadioButton manual, autopilot;
 	@FXML
 	Label statlabel;
 	@FXML
@@ -48,46 +54,61 @@ public class ViewController {
 	@FXML
 	TextArea txtcommands;
 	@FXML
-	Slider throttle;
+	Slider throttle, rudder;
 	@FXML
-	Slider rudder;
-	@FXML
-	Circle joystick;
-	@FXML
-	Circle joystickBorder;
+	Circle joystick, joystickBorder;
 	
 	//-----------------------Repeated Objects-----------------------
-	String MCL = "Manual Controls locked! - To manualy control the aircraft you need to press the Manual controls button first";
+	String MCL = "Manual Controls locked! - To manualy control the aircraft you need to press the Manual Controls button first";
+	
 
-
-	public ViewController() {
-		this.map = new int[4][7];
+	public ViewController(ViewModel vm) {
+		//this.map = new int[4][7];
+		this.setViewModel(vm);
+		this.alieronVal = new SimpleDoubleProperty();
+		this.elevatorVal = new SimpleDoubleProperty();
+		this.vm.addObserver(this);
+	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		
 		
 	}
-
+	public void setViewModel(ViewModel vm) {
+		this.vm = vm;
+		this.vm.throttle.bind(this.throttle.valueProperty());
+		this.vm.rudder.bind(this.rudder.valueProperty());
+		this.vm.alieron.bind(this.alieronVal);
+		this.vm.elevator.bind(this.elevatorVal);
+	}
+	
 	public void joystickOnMouseDrag(MouseEvent event) {
 		if(this.manual.isSelected()) {
-			if (event.getX() < 100 && event.getX() > -100)
-				if (event.getY() < 100 && event.getY() > -100) {
+			if (event.getX() <= 100 && event.getX() >= -100)
+				if (event.getY() <= 100 && event.getY() >= -100) {
 					joystick.setCenterX(event.getX());
 					joystick.setCenterY(event.getY());
-					statlabel.setText("(Elevator = " + event.getX() + " Alieron = " + event.getY() + ")");
-					//statlabel.setText("(" + joystick.getCenterX() + "," + joystick.getCenterY() + ")");
+					statlabel.setText("(Alieron = " + event.getX()/100 + " Elevator = " + event.getY()/100 + ")");
+					this.elevatorVal.set(event.getY()/100);
+					this.alieronVal.set(event.getX()/100);
 				}
 		} else this.statlabel.setText(MCL);
 	}
 
 	public void joystickOnMouseRelease(MouseEvent event) {
-		System.out.println("Joystick released!!!");
+		System.out.println(this.alieronVal.get());
+		System.out.println(this.elevatorVal.get());		
 		joystick.setCenterX(0);
 		joystick.setCenterY(0);
+		
 	}
 
 	public void connect() throws IOException {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Connect.fxml"));
 		AnchorPane newWindow = (AnchorPane) loader.load();
 		ConnectController controller = loader.getController();
-		controller.setMainWindowandInterpreter(this, i);
+		controller.setMainWindow(this);
 		this.connectWindow = new Stage();
 		this.connectWindow.initModality(Modality.WINDOW_MODAL);
 		this.connectWindow.initOwner(connect.getScene().getWindow());
@@ -146,7 +167,8 @@ public class ViewController {
 	}
 
 	public void executeCommandsPressed() {
-
+		String line = this.txtcommands.getText();
+		this.vm.autoPilotText.setValue(line);
 	}
 
 	public void ManualIsPressed(){
@@ -167,31 +189,42 @@ public class ViewController {
 	public void changeThrottleOnRelease(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			System.out.println("Throttle is set to = " + this.throttle.getValue());
-		}else this.statlabel.setText(MCL);
+			
+		}else {
+			this.statlabel.setText(MCL);
+		}
 	}
 	public void throttleValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			this.statlabel.setText("Throttle = " + this.throttle.getValue());
-		} else this.statlabel.setText(MCL);
+		} else {
+			this.throttle.setValue(0.0);
+		}
 	}
 	public void rudderValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			this.statlabel.setText("Rudder = " + this.rudder.getValue());
-		} else this.statlabel.setText(MCL);
+		}else {
+			this.rudder.setValue(0.0);
+		}
 	}
 	public void changeRudderOnRelease(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			this.statlabel.setText("Rudder is set to = " + this.rudder.getValue());
-		} else this.statlabel.setText(MCL);
+		} else {
+			this.statlabel.setText(MCL);
+		}
 	}
 	public void resetThrottle() {
-		this.throttle.setValue(0.0);
-		this.statlabel.setText("Throttle has been set back to 0");
-		
+		if(this.manual.isSelected()) {
+			this.throttle.setValue(0.0);
+			this.statlabel.setText("Throttle has been set back to 0");
+		} else this.statlabel.setText(MCL);
 	}
 	public void resetRudder() {
-		this.rudder.setValue(0.0);
-		this.statlabel.setText("Rudder has been set back to 0");
-		
+		if(this.manual.isSelected()) {
+			this.rudder.setValue(0.0);
+			this.statlabel.setText("Rudder has been set back to 0");
+		} else this.statlabel.setText(MCL);
 	}
 }

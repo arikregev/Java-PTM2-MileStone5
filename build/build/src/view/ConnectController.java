@@ -1,16 +1,14 @@
 package view;
 
+import java.util.Observable;
 import java.util.regex.Pattern;
-
-import interpreter.Interpreter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class ConnectController {
+public class ConnectController extends Observable{
 	private String ip = null;
-	private Interpreter i;
 	private int telnetPort = 0;
 	private int listenPort = 0;
 	private ViewController mainWindow = null;
@@ -37,27 +35,40 @@ public class ConnectController {
 				status.setText("Please enter a valid port");
 				return;
 			}
-			if (connect(this.ip, this.telnetPort, this.listenPort) == false) {
-				status.setText("Connection failed, Try Again");
-			}else {
-				this.mainWindow.closeConnectWindow();
-			}
+			connect(this.ip, this.telnetPort, this.listenPort);
+			this.mainWindow.closeConnectWindow();
 		} else {
 			status.setText("Please enter IP and port");
 		}
 	}
 
-	private boolean connect(String ip, int telnetPort, int listenPort) {
-
-		return false;
+	private void connect(String ip, int telnetPort, int listenPort) {
+		this.ip = ip;
+		this.telnetPort = telnetPort;
+		this.listenPort = listenPort;
+		this.setChanged();
+		this.notifyObservers();
 	}
 
 	private boolean ipValidityCheck(String ip) {
 		return this.p.matcher(ip).matches();
 	}
 
-	public void setMainWindowandInterpreter(ViewController mainWindow, Interpreter i) {
+	public void setMainWindow(ViewController mainWindow) {
 		this.mainWindow = mainWindow;
-		this.i = i;
 	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public int getTelnetPort() {
+		return telnetPort;
+	}
+
+	public int getListenPort() {
+		return listenPort;
+	}
+	
+	
 }

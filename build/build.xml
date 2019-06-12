@@ -19,11 +19,6 @@
 	
 		<mkdir dir="externalLibs" />
 	
-		<copy todir="externalLibs">
-			<fileset dir="/Users/arik/Documents/Eclipse/PTM2FinalProj">
-				<filename name="interpreter.jar"/>
-			</fileset>
-		</copy>
 	
 		<mkdir dir="project" />
 		<copy todir="project">
@@ -43,7 +38,6 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
-				<include name="interpreter.jar"/>
 			</fileset>
 		</copy>
 	

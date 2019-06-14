@@ -52,10 +52,13 @@
                     <buttons>
                         <RadioButton fx:id="autopilot" mnemonicParsing="false" onAction="#AutoPilotIsPressed" prefWidth="113.0" text="AutoPilot" />
                       <Button fx:id="textfile" mnemonicParsing="false" onAction="#loadTextFile" text="TextFile" />
-                        <Button fx:id="executecommands" mnemonicParsing="false" text="Execute" />
+                        <Button fx:id="executecommands" mnemonicParsing="false" onAction="#executeCommandsPressed" text="Execute" />
                     </buttons>
                   </ButtonBar>
                </top>
+               <bottom>
+                  <TextArea fx:id="history" prefHeight="65.0" prefWidth="326.0" promptText="History of AutoPilot Command Sent to the Interpreter" BorderPane.alignment="CENTER" />
+               </bottom>
             </BorderPane>
          </children>
       </VBox>
@@ -71,12 +74,12 @@
       <AnchorPane prefHeight="322.0" prefWidth="302.0" BorderPane.alignment="CENTER">
          <children>
             <RadioButton fx:id="manual" layoutX="20.0" layoutY="5.0" mnemonicParsing="false" onAction="#ManualIsPressed" text="Manual Contorls" />
-            <Slider fx:id="rudder" layoutX="53.0" layoutY="279.0" max="1.0" min="-1.0" onMouseDragged="#rudderValueDragged" onMouseReleased="#changeRudderOnRelease" prefHeight="16.0" prefWidth="200.0" />
-            <Slider fx:id="throttle" layoutX="20.0" layoutY="62.0" max="1.0" onMouseDragged="#throttleValueDragged" onMouseReleased="#changeThrottleOnRelease" orientation="VERTICAL" prefHeight="190.0" prefWidth="16.0" />
+            <Slider fx:id="rudder" layoutX="53.0" layoutY="287.0" max="1.0" min="-1.0" onMouseDragged="#rudderValueDragged" onMouseReleased="#changeRudderOnRelease" prefHeight="16.0" prefWidth="200.0" showTickLabels="true" />
+            <Slider fx:id="throttle" layoutX="20.0" layoutY="62.0" max="1.0" onMouseDragged="#throttleValueDragged" onMouseReleased="#changeThrottleOnRelease" orientation="VERTICAL" prefHeight="190.0" prefWidth="16.0" showTickLabels="true" />
             <Circle fx:id="joystickBorder" fill="#babfc3" layoutX="153.0" layoutY="161.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
             <Label layoutX="118.0" layoutY="300.0" text="&lt;-rudder-&gt;" />
-            <Label layoutX="-24.0" layoutY="149.0" rotate="-90.0" text="&lt;-throttle-&gt;" />
-            <Label layoutX="118.0" layoutY="33.0" text="&lt;-alieron-&gt;" />
+            <Label layoutX="-26.0" layoutY="149.0" rotate="-90.0" text="&lt;-throttle-&gt;" />
+            <Label layoutX="118.0" layoutY="41.0" text="&lt;-aileron-&gt;" />
             <Label layoutX="230.0" layoutY="153.0" rotate="90.0" text="&lt;-elevator-&gt;" />
             <Circle fx:id="joystick" fill="#8e9397" focusTraversable="true" layoutX="153.0" layoutY="161.0" onMouseDragged="#joystickOnMouseDrag" onMouseReleased="#joystickOnMouseRelease" radius="46.0" stroke="BLACK" strokeLineCap="ROUND" strokeWidth="3.0">
                <effect>
@@ -86,16 +89,18 @@
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
             </Circle>
-            <Button fx:id="rthrottle" layoutX="43.0" layoutY="234.0" mnemonicParsing="false" onAction="#resetThrottle" text="R">
+            <Button layoutX="43.0" layoutY="234.0" mnemonicParsing="false" onAction="#resetThrottle" text="R">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button fx:id="rrudder" layoutX="259.0" layoutY="276.0" mnemonicParsing="false" onAction="#resetRudder" text="R">
+            <Button layoutX="259.0" layoutY="285.0" mnemonicParsing="false" onAction="#resetRudder" text="R">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
+            <Slider fx:id="flaps" blockIncrement="0.3333334" layoutX="233.0" layoutY="54.0" max="1.0" onMouseDragged="#flapsValueDragged" onMouseReleased="#changeFlapsOnRelease" prefHeight="16.0" prefWidth="56.0" />
+            <Label layoutX="231.0" layoutY="71.0" text="&lt;-flaps-&gt;" />
          </children>
       </AnchorPane>
    </right>

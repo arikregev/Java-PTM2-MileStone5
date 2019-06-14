@@ -15,7 +15,7 @@ import model.interpreter.interpreter.commands.servercommands.*;
 import model.interpreter.interpreter.commands.singlecommands.*;
 import model.interpreter.interpreter.symbols.SymbolTable;
 
-public class Interpreter extends Observable {
+public class Interpreter extends Observable  {
 	@SuppressWarnings("serial")
 	public static class ParseException extends Exception {
 
@@ -29,7 +29,7 @@ public class Interpreter extends Observable {
 	private ControlCommand ctrl;
 	private List<String> tokenStream = new LinkedList<String>();
 	private final String lexerRegex = "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|-?\\d+\\.?\\d*|-?\\d*\\.?\\d+|\".*\"|==|!=|<=|>=|<|>|\\+|-|\\*|\\/|&&|\\|\\||!|=|\\(|\\)|\\{|\\}|\\w+)";
-
+	
 	public Interpreter(String[] simPaths) {
 		commandMap = new HashMap<>();
 		blockStack = new Stack<>();
@@ -49,16 +49,10 @@ public class Interpreter extends Observable {
 	//public abstract String getLine() throws EOFException;
 	
 	public void interpretLine(String line) throws ExecutionException, ParseException{	
-		boolean returned = false;
-		while(!returned) {
-			// lexical analysis
-			tokenStream.addAll(lexer(line));
-			for (Command c: parseTokens(tokenStream)) {
-				if (!c.execute(symTable)){
-					returned = true;
-					break;
-				}
-			}	
+		tokenStream.addAll(lexer(line));
+		for (Command c: parseTokens(tokenStream)) { 
+			c.execute(symTable);
+			
 		}
 	}
 	

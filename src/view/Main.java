@@ -15,20 +15,13 @@ import javafx.fxml.FXMLLoader;
 
 public class Main extends Application {
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws IOException {
 		FXMLLoader fxml = new FXMLLoader();
-		BorderPane root = null;
-		try {
-			  root = fxml.load(getClass().getResource("View.fxml").openStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		BorderPane root = fxml.load(getClass().getResource("View.fxml").openStream());
 		Interpreter i = new Interpreter(new SimPaths().getPaths());
 		ViewModel vm = new ViewModel(i);
 		ViewController vc = fxml.getController();
-		
-		
+		vc.setViewModel(vm);
 		Scene scene = new Scene(root,935,340);
 		primaryStage.setScene(scene);
 		primaryStage.show();

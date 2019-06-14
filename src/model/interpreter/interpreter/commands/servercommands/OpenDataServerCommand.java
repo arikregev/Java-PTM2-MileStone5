@@ -40,8 +40,6 @@ public class OpenDataServerCommand implements Command {
 		}
 		return true;
 	}
-
-
 	
 	public static class Factory extends CommandFactory {
 		@Override

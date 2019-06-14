@@ -8,11 +8,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
@@ -29,9 +26,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.interpreter.interpreter.Interpreter;
-import model.interpreter.interpreter.Interpreter.ParseException;
-import model.interpreter.interpreter.commands.ExecutionException;
 import viewmodel.ViewModel;
 
 public class ViewController implements Observer{
@@ -39,8 +33,8 @@ public class ViewController implements Observer{
 	ViewModel vm = null;
 	File csv = null;
 	File txt = null;
-	int[][] map;
-	DoubleProperty alieronVal, elevatorVal;
+	//int[][] map;
+	DoubleProperty alieronVal, elevatorVal, flapsval;
 	
 	//-----------------------FXML Objects-----------------------
 	@FXML
@@ -52,35 +46,43 @@ public class ViewController implements Observer{
 	@FXML
 	Button executecommands;
 	@FXML
-	TextArea txtcommands;
+	TextArea txtcommands, history;
 	@FXML
-	Slider throttle, rudder;
+	Slider throttle, rudder, flaps;
 	@FXML
 	Circle joystick, joystickBorder;
 	
 	//-----------------------Repeated Objects-----------------------
 	String MCL = "Manual Controls locked! - To manualy control the aircraft you need to press the Manual Controls button first";
-	
+	String APL = "Cannot Execute! = To use the AutoPilot option you need to press the AutoPilot mode Button first";
 
-	public ViewController(ViewModel vm) {
+	public ViewController() {
 		//this.map = new int[4][7];
-		this.setViewModel(vm);
-		this.alieronVal = new SimpleDoubleProperty();
-		this.elevatorVal = new SimpleDoubleProperty();
-		this.vm.addObserver(this);
+		//this.setViewModel(vm);
+		//this.alieronVal = new SimpleDoubleProperty();
+		//this.elevatorVal = new SimpleDoubleProperty();
+		//this.vm.addObserver(this);
 	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		
+		if(o instanceof ViewModel) {
+			this.history.appendText(arg + "\n");
+		}
 		
 	}
 	public void setViewModel(ViewModel vm) {
 		this.vm = vm;
+		this.alieronVal = new SimpleDoubleProperty();
+		this.elevatorVal = new SimpleDoubleProperty();
+		this.flapsval = new SimpleDoubleProperty();
 		this.vm.throttle.bind(this.throttle.valueProperty());
 		this.vm.rudder.bind(this.rudder.valueProperty());
 		this.vm.alieron.bind(this.alieronVal);
 		this.vm.elevator.bind(this.elevatorVal);
+		this.vm.flaps.bind(this.flapsval);
+		this.vm.addObserver(this);
+		
 	}
 	
 	public void joystickOnMouseDrag(MouseEvent event) {
@@ -90,18 +92,21 @@ public class ViewController implements Observer{
 					joystick.setCenterX(event.getX());
 					joystick.setCenterY(event.getY());
 					statlabel.setText("(Alieron = " + event.getX()/100 + " Elevator = " + event.getY()/100 + ")");
-					this.elevatorVal.set(event.getY()/100);
+					this.elevatorVal.set(event.getY()/-100);
 					this.alieronVal.set(event.getX()/100);
+					this.vm.elevatorChanged();
+					this.vm.aileronChanged();
 				}
 		} else this.statlabel.setText(MCL);
 	}
 
 	public void joystickOnMouseRelease(MouseEvent event) {
-		System.out.println(this.alieronVal.get());
-		System.out.println(this.elevatorVal.get());		
+		if(this.manual.isSelected()) {
+			System.out.println(this.alieronVal.get());
+			System.out.println(this.elevatorVal.get());	
+		}
 		joystick.setCenterX(0);
-		joystick.setCenterY(0);
-		
+		joystick.setCenterY(0);	
 	}
 
 	public void connect() throws IOException {
@@ -109,6 +114,7 @@ public class ViewController implements Observer{
 		AnchorPane newWindow = (AnchorPane) loader.load();
 		ConnectController controller = loader.getController();
 		controller.setMainWindow(this);
+		controller.setViewModel(this.vm);
 		this.connectWindow = new Stage();
 		this.connectWindow.initModality(Modality.WINDOW_MODAL);
 		this.connectWindow.initOwner(connect.getScene().getWindow());
@@ -120,7 +126,7 @@ public class ViewController implements Observer{
 		if(this.connectWindow != null) {
 			this.connectWindow.close();
 			this.connectWindow = null;
-			this.statlabel.setText("Connection successfull");
+			this.statlabel.setText("Connection sent successfully to Interpreter");
 		}
 	}
 
@@ -167,8 +173,11 @@ public class ViewController implements Observer{
 	}
 
 	public void executeCommandsPressed() {
-		String line = this.txtcommands.getText();
-		this.vm.autoPilotText.setValue(line);
+		if(this.autopilot.isSelected()) {
+			String line = this.txtcommands.getText();
+			this.vm.autoPilotText.setValue(line);
+			this.vm.getAutoPilotText();
+		} else this.statlabel.setText(APL);
 	}
 
 	public void ManualIsPressed(){
@@ -189,7 +198,6 @@ public class ViewController implements Observer{
 	public void changeThrottleOnRelease(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			System.out.println("Throttle is set to = " + this.throttle.getValue());
-			
 		}else {
 			this.statlabel.setText(MCL);
 		}
@@ -197,6 +205,7 @@ public class ViewController implements Observer{
 	public void throttleValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			this.statlabel.setText("Throttle = " + this.throttle.getValue());
+			this.vm.throttleChanged();
 		} else {
 			this.throttle.setValue(0.0);
 		}
@@ -204,6 +213,7 @@ public class ViewController implements Observer{
 	public void rudderValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
 			this.statlabel.setText("Rudder = " + this.rudder.getValue());
+			this.vm.rudderChanged();
 		}else {
 			this.rudder.setValue(0.0);
 		}
@@ -218,13 +228,31 @@ public class ViewController implements Observer{
 	public void resetThrottle() {
 		if(this.manual.isSelected()) {
 			this.throttle.setValue(0.0);
+			this.vm.throttleChanged();
 			this.statlabel.setText("Throttle has been set back to 0");
 		} else this.statlabel.setText(MCL);
 	}
 	public void resetRudder() {
 		if(this.manual.isSelected()) {
 			this.rudder.setValue(0.0);
+			this.vm.rudderChanged();
 			this.statlabel.setText("Rudder has been set back to 0");
 		} else this.statlabel.setText(MCL);
 	}
+	public void flapsValueDragged(MouseEvent event) {
+		if(this.manual.isSelected()) {
+			this.flapsval.setValue(this.flaps.getValue());
+			this.vm.flapsChanged();
+		} else {
+			this.flaps.setValue(0.0);
+		}
+	}
+	public void changeFlapsOnRelease(MouseEvent event) {
+		if(this.manual.isSelected()) {
+			this.statlabel.setText("Flaps is set to = " + this.flaps.getValue());
+		} else {
+			this.statlabel.setText(MCL);
+		}
+	}
+	
 }

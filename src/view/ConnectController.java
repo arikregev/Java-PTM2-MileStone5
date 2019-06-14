@@ -7,12 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.interpreter.interpreter.Interpreter;
+import viewmodel.ViewModel;
 
 public class ConnectController implements Observer{
 	private String ip = null;
 	private int telnetPort = 0;
 	private int listenPort = 0;
 	private ViewController mainWindow = null;
+	private ViewModel vm = null;
 	private final Pattern p = Pattern
 			.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 	@FXML
@@ -37,17 +40,33 @@ public class ConnectController implements Observer{
 				status.setText("Please enter a valid port");
 				return;
 			}
-			connect(this.ip, this.telnetPort, this.listenPort);
-			this.mainWindow.closeConnectWindow();
+			if(connect(this.ip, this.telnetPort, this.listenPort)) {
+				this.mainWindow.closeConnectWindow();	
+			}
+			else status.setText("Connect Error");
 		} else {
 			status.setText("Please enter IP and port");
 		}
 	}
-
-	private void connect(String ip, int telnetPort, int listenPort) {
+	public void setViewModel(ViewModel vm) {
+		this.vm = vm;
+		//this.vm.addObserver(this);
+	}
+	private boolean connect(String ip, int telnetPort, int listenPort) {
 		this.ip = ip;
 		this.telnetPort = telnetPort;
 		this.listenPort = listenPort;
+		if(this.vm != null) {
+			this.vm.sendCommandToInterpreter("openDataServer " + listenPort + " 10");
+			this.vm.sendCommandToInterpreter("connect "+ ip + " " + telnetPort);
+			this.vm.sendCommandToInterpreter("var throttle = bind \"/controls/engines/current-engine/throttle\"");
+			this.vm.sendCommandToInterpreter("var rudder = bind \"/controls/flight/rudder\"");
+			this.vm.sendCommandToInterpreter("var aileron = bind \"/controls/flight/aileron\"");
+			this.vm.sendCommandToInterpreter("var elevator = bind \"/controls/flight/elevator\"");
+			this.vm.sendCommandToInterpreter("var flaps = bind \"/controls/flight/flaps\"");
+			return true;
+		}
+		return false;
 	}
 
 	private boolean ipValidityCheck(String ip) {
@@ -68,6 +87,11 @@ public class ConnectController implements Observer{
 
 	public int getListenPort() {
 		return listenPort;
+	}
+	public void setDefualts() {
+		this.ipText.setText("127.0.0.1");
+		this.portText.setText("5402");
+		this.listeningport.setText("5400");
 	}
 
 	@Override

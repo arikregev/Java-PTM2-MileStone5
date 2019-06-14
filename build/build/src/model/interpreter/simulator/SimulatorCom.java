@@ -20,7 +20,7 @@ public class SimulatorCom {
 	private PrintWriter pw = null;
 	private final int NULL_BUFFER_SIZE = 1024;
 	private byte[] nullBytes = new byte[NULL_BUFFER_SIZE]; 
-	
+	private boolean isConnected = false; // Milestone 5
 
 	
 	public SimulatorCom(String[] paths) {
@@ -57,6 +57,7 @@ public class SimulatorCom {
 	}
 	public void connect(String ip, int port) throws IOException {
 		this.connectSock = new Socket(ip, port);
+		this.isConnected = true;
 		this.pw = new PrintWriter(this.connectSock.getOutputStream());
 	}
 	
@@ -84,6 +85,7 @@ public class SimulatorCom {
 		if(this.connectSock != null) {
 			closeResource(this.connectSock);
 			this.connectSock = null;
+			this.isConnected = false;
 		}
 		if(this.srv != null) {
 			closeResource(this.srv);

@@ -4,7 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import model.interpreter.interpreter.Interpreter;
-import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.MainInterpreter.ParseException;
 import model.interpreter.interpreter.commands.ExecutionException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,6 +17,7 @@ public class ViewModel extends Observable implements Observer{
 	public StringProperty autoPilotText;
 	public DoubleProperty throttle, rudder, alieron, elevator, flaps;
 	
+	
 	public ViewModel(Interpreter i){
 		this.i = i;
 		this.autoPilotText = new SimpleStringProperty();
@@ -25,7 +26,7 @@ public class ViewModel extends Observable implements Observer{
 		this.alieron = new SimpleDoubleProperty();
 		this.elevator = new SimpleDoubleProperty();
 		this.flaps = new SimpleDoubleProperty();
-		this.i.addObserver(this);
+		//this.i.addObserver(this);
 	}
 	
 	public void getAutoPilotText() {
@@ -36,7 +37,7 @@ public class ViewModel extends Observable implements Observer{
 				this.i.interpretLine(lines[i]);
 			} catch (ExecutionException | ParseException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Error sending Command: " + lines[i] + " -- " + e.getMessage());
 			}
 			
 		}
@@ -46,7 +47,7 @@ public class ViewModel extends Observable implements Observer{
 			this.i.interpretLine(s);
 		} catch (ExecutionException | ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Error sending Command: " + s);
 		}
 	}
 	public void throttleChanged() {
@@ -83,7 +84,9 @@ public class ViewModel extends Observable implements Observer{
 	}
 	public void flapsChanged() {
 		try {
+			System.out.println("flaps = " + this.flaps.get());
 			this.i.interpretLine("flaps = " + this.flaps.get());
+			
 		} catch (ExecutionException | ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

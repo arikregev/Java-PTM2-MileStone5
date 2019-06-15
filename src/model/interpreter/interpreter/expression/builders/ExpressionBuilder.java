@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.MainInterpreter.ParseException;
 import model.interpreter.interpreter.expression.*;
 import model.interpreter.interpreter.expression.logic.*;
 import model.interpreter.interpreter.expression.logic.comparisonExpressions.*;

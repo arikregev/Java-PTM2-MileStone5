@@ -2,7 +2,7 @@ package model.interpreter.test;
 
 import java.io.EOFException;
 
-import model.interpreter.interpreter.Interpreter;
+import model.interpreter.interpreter.MainInterpreter;
 
 public class ArikMain {
 /*

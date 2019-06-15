@@ -17,7 +17,15 @@ public class SymbolTable {
 	private double returnValue = 0;
 	private HashMap<String,Symbol> symTable;
 	public final SimulatorCom simCom;
+	private volatile boolean interrupt;
 	
+	public boolean isInterrupt() {
+		return interrupt;
+	}
+
+	public void setInterrupt(boolean interrupt) {
+		this.interrupt = interrupt;
+	}
 	public SymbolTable(String[] simPaths) {
 		symTable = new HashMap<String, Symbol>();
 		this.simCom = new SimulatorCom(simPaths);
@@ -71,15 +79,10 @@ public class SymbolTable {
 		return symTable.containsKey(s);
 	}
 	
-	/**
-	 * @return the returnValue
-	 */
 	public double getReturnValue() {
 		return returnValue;
 	}
-	/**
-	 * @param returnValue the returnValue to set
-	 */
+
 	public void setReturnValue(double returnValue) {
 		this.returnValue = returnValue;
 	}

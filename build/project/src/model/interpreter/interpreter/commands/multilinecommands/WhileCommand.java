@@ -2,7 +2,7 @@ package model.interpreter.interpreter.commands.multilinecommands;
 
 import java.util.List;
 
-import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.MainInterpreter.ParseException;
 import model.interpreter.interpreter.commands.Command;
 import model.interpreter.interpreter.commands.ExecutionException;
 import model.interpreter.interpreter.commands.factory.CommandFactory;
@@ -25,7 +25,7 @@ public class WhileCommand extends ControlCommand{
 	}
 	@Override
 	public boolean execute(SymbolTable symTable) throws ExecutionException {
-		while(exp.calculateLogic(symTable)) {
+		while(!symTable.isInterrupt() && exp.calculateLogic(symTable)) {
 			if(!innerCommand.execute(symTable))
 				return false;
 		}

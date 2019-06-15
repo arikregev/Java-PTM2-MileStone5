@@ -4,7 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import model.interpreter.interpreter.Interpreter;
-import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.MainInterpreter.ParseException;
 import model.interpreter.interpreter.commands.ExecutionException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,6 +17,7 @@ public class ViewModel extends Observable implements Observer{
 	public StringProperty autoPilotText;
 	public DoubleProperty throttle, rudder, alieron, elevator, flaps;
 	
+	
 	public ViewModel(Interpreter i){
 		this.i = i;
 		this.autoPilotText = new SimpleStringProperty();
@@ -25,27 +26,28 @@ public class ViewModel extends Observable implements Observer{
 		this.alieron = new SimpleDoubleProperty();
 		this.elevator = new SimpleDoubleProperty();
 		this.flaps = new SimpleDoubleProperty();
-		this.i.addObserver(this);
+		//this.i.addObserver(this);
 	}
 	
 	public void getAutoPilotText() {
 		String[] lines = this.autoPilotText.getValue().split("\n");
 		for(int i = 0; i < lines.length; i++) {
 			try {
-				System.out.println(lines[i]);
+				//System.out.println(lines[i]);
 				this.i.interpretLine(lines[i]);
 			} catch (ExecutionException | ParseException e) {
-				// TODO Auto-generated catch block
 				System.out.println("Error sending Command: " + lines[i] + " -- " + e.getMessage());
 			}
 			
 		}
 	}
+	public void changeTab() {
+		this.i.resetInterpreter();
+	}
 	public void sendCommandToInterpreter(String s) { //being Used mainly by Connect Command
 		try {
 			this.i.interpretLine(s);
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Error sending Command: " + s);
 		}
 	}
@@ -53,7 +55,6 @@ public class ViewModel extends Observable implements Observer{
 		try {
 			this.i.interpretLine("throttle = " + this.throttle.get());
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -61,7 +62,6 @@ public class ViewModel extends Observable implements Observer{
 		try {
 			this.i.interpretLine("rudder = " + this.rudder.get());
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -69,7 +69,6 @@ public class ViewModel extends Observable implements Observer{
 		try {
 			this.i.interpretLine("aileron = " + this.alieron.get());
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -77,7 +76,6 @@ public class ViewModel extends Observable implements Observer{
 		try {
 			this.i.interpretLine("elevator = " + this.elevator.get());
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -87,30 +85,11 @@ public class ViewModel extends Observable implements Observer{
 			this.i.interpretLine("flaps = " + this.flaps.get());
 			
 		} catch (ExecutionException | ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	@Override
 	public void update(Observable o, Object arg) {
-		
-		
-		/*if(o instanceof ConnectController) {
-			ConnectController connect = (ConnectController)o;
-			try {
-				i.interpretLine("openDataServer " + String.valueOf(connect.getListenPort()) + "10");
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			try {
-				i.interpretLine("connect " + connect.getIp() + " " + String.valueOf(connect.getTelnetPort()));
-			} catch (ExecutionException | ParseException e) {
-				e.printStackTrace();
-			}	
-		}*/
-		
 		
 	}
 }

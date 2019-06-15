@@ -75,6 +75,7 @@ public class ViewController implements Observer{
 		this.vm = vm;
 		this.alieronVal = new SimpleDoubleProperty();
 		this.elevatorVal = new SimpleDoubleProperty();
+		this.flapsval = new SimpleDoubleProperty();
 		this.vm.throttle.bind(this.throttle.valueProperty());
 		this.vm.rudder.bind(this.rudder.valueProperty());
 		this.vm.alieron.bind(this.alieronVal);
@@ -100,10 +101,6 @@ public class ViewController implements Observer{
 	}
 
 	public void joystickOnMouseRelease(MouseEvent event) {
-		if(this.manual.isSelected()) {
-			System.out.println(this.alieronVal.get());
-			System.out.println(this.elevatorVal.get());	
-		}
 		joystick.setCenterX(0);
 		joystick.setCenterY(0);	
 	}
@@ -240,7 +237,7 @@ public class ViewController implements Observer{
 	}
 	public void flapsValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
-			this.statlabel.setText("Flaps = " + this.flaps.getValue());
+			this.flapsval.setValue(this.flaps.getValue());
 			this.vm.flapsChanged();
 		} else {
 			this.flaps.setValue(0.0);

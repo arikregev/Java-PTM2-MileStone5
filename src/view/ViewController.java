@@ -101,10 +101,6 @@ public class ViewController implements Observer{
 	}
 
 	public void joystickOnMouseRelease(MouseEvent event) {
-		if(this.manual.isSelected()) {
-			System.out.println(this.alieronVal.get());
-			System.out.println(this.elevatorVal.get());	
-		}
 		joystick.setCenterX(0);
 		joystick.setCenterY(0);	
 	}
@@ -181,11 +177,15 @@ public class ViewController implements Observer{
 	}
 
 	public void ManualIsPressed(){
+		/*if(this.manual.isSelected())
+			return;*/
 		if(this.autopilot.isSelected()) {
 			this.autopilot.setSelected(false);
 		}
 		this.manual.setSelected(true);
 		this.statlabel.setText("Manual Controls mode - Initiated.");
+
+		this.vm.changeTab();
 	}
 	public void AutoPilotIsPressed(){
 		if(this.manual.isSelected()) {
@@ -193,6 +193,8 @@ public class ViewController implements Observer{
 		}
 		this.autopilot.setSelected(true);
 		this.statlabel.setText("AutoPilot mode - Initiated.");
+		
+		this.vm.changeTab();
 
 	}
 	public void changeThrottleOnRelease(MouseEvent event) {

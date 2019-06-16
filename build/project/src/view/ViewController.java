@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
@@ -51,17 +52,14 @@ public class ViewController implements Observer{
 	Slider throttle, rudder, flaps;
 	@FXML
 	Circle joystick, joystickBorder;
-	
+	@FXML
+	GuideMap guidemap;
 	//-----------------------Repeated Objects-----------------------
 	String MCL = "Manual Controls locked! - To manualy control the aircraft you need to press the Manual Controls button first";
 	String APL = "Cannot Execute! = To use the AutoPilot option you need to press the AutoPilot mode Button first";
 
 	public ViewController() {
-		//this.map = new int[4][7];
-		//this.setViewModel(vm);
-		//this.alieronVal = new SimpleDoubleProperty();
-		//this.elevatorVal = new SimpleDoubleProperty();
-		//this.vm.addObserver(this);
+		this.guidemap = new GuideMap();
 	}
 	
 	@Override
@@ -128,10 +126,11 @@ public class ViewController implements Observer{
 
 	public void loadData() {
 		this.csv = this.fileLoader();
-		if (this.csv == null) {
-			this.statlabel.setText("Error with CSV file, Try Again");
-		} else
+		if (this.csv != null) {
 			this.statlabel.setText("CSV File updaoded Successfuly");
+			this.guidemap.generateMap(csv);
+		} else
+			this.statlabel.setText("Error with CSV file, Try Again");
 	}
 
 	public void calcData() {
@@ -177,11 +176,15 @@ public class ViewController implements Observer{
 	}
 
 	public void ManualIsPressed(){
+		/*if(this.manual.isSelected())
+			return;*/
 		if(this.autopilot.isSelected()) {
 			this.autopilot.setSelected(false);
 		}
 		this.manual.setSelected(true);
 		this.statlabel.setText("Manual Controls mode - Initiated.");
+
+		this.vm.changeTab();
 	}
 	public void AutoPilotIsPressed(){
 		if(this.manual.isSelected()) {
@@ -189,6 +192,8 @@ public class ViewController implements Observer{
 		}
 		this.autopilot.setSelected(true);
 		this.statlabel.setText("AutoPilot mode - Initiated.");
+		
+		this.vm.changeTab();
 
 	}
 	public void changeThrottleOnRelease(MouseEvent event) {

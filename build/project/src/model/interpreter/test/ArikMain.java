@@ -1,9 +1,5 @@
 package model.interpreter.test;
 
-import java.io.EOFException;
-
-import model.interpreter.interpreter.MainInterpreter;
-
 public class ArikMain {
 /*
 	public static void main(String[] args) {

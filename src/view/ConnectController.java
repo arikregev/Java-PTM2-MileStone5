@@ -3,11 +3,11 @@ package view;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.regex.Pattern;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import model.interpreter.interpreter.MainInterpreter;
 import viewmodel.ViewModel;
 
 public class ConnectController implements Observer{

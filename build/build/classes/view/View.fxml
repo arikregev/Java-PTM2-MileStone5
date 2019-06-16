@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
+<?import view.GuideMap?>
 
 <BorderPane prefHeight="341.0" prefWidth="964.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ViewController">
    <left>
@@ -34,7 +35,7 @@
                   </ButtonBar>
                </top>
                <center>
-                  <Canvas height="281.0" width="321.0" BorderPane.alignment="CENTER" />
+                  <GuideMap fx:id="guidemap" height="281.0" width="321.0" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </children>

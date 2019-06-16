@@ -1,23 +1,25 @@
 package view;
 	
-import model.interpreter.interpreter.MainInterpreter;
 import java.io.IOException;
+
 import javafx.application.Application;
-import javafx.stage.Stage;
-import viewmodel.ViewModel;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
+import model.interpreter.interpreter.Interpreter;
+import viewmodel.ViewModel;
 
 
 public class Main extends Application {
+	Thread t = null;
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		FXMLLoader fxml = new FXMLLoader();
 		BorderPane root = fxml.load(getClass().getResource("View.fxml").openStream());
-		MainInterpreter i = new MainInterpreter(new SimPaths().getPaths());
-		ViewModel vm = new ViewModel(i.getProxyInterpreter());
-		Thread t = new Thread(()->{ i.run(); });
+		Interpreter i = new Interpreter(new SimPaths().getPaths());
+		ViewModel vm = new ViewModel(i);
+		t = new Thread(()->{ i.run(); });
 		t.start();
 		ViewController vc = fxml.getController();
 		vc.setViewModel(vm);

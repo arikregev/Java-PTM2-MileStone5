@@ -3,13 +3,11 @@ package viewmodel;
 import java.util.Observable;
 import java.util.Observer;
 
-import model.interpreter.interpreter.Interpreter;
-import model.interpreter.interpreter.MainInterpreter.ParseException;
-import model.interpreter.interpreter.commands.ExecutionException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import model.interpreter.interpreter.Interpreter;
 
 
 public class ViewModel extends Observable implements Observer{
@@ -32,61 +30,31 @@ public class ViewModel extends Observable implements Observer{
 	public void getAutoPilotText() {
 		String[] lines = this.autoPilotText.getValue().split("\n");
 		for(int i = 0; i < lines.length; i++) {
-			try {
-				//System.out.println(lines[i]);
-				this.i.interpretLine(lines[i]);
-			} catch (ExecutionException | ParseException e) {
-				System.out.println("Error sending Command: " + lines[i] + " -- " + e.getMessage());
-			}
-			
+			this.i.interpretLine(lines[i]);
 		}
 	}
 	public void changeTab() {
 		this.i.resetInterpreter();
 	}
 	public void sendCommandToInterpreter(String s) { //being Used mainly by Connect Command
-		try {
-			this.i.interpretLine(s);
-		} catch (ExecutionException | ParseException e) {
-			System.out.println("Error sending Command: " + s);
-		}
+		this.i.interpretLine(s);
 	}
 	public void throttleChanged() {
-		try {
-			this.i.interpretLine("throttle = " + this.throttle.get());
-		} catch (ExecutionException | ParseException e) {
-			e.printStackTrace();
-		}
+		this.i.interpretLine("throttle = " + this.throttle.get());
+
 	}
 	public void rudderChanged() {
-		try {
-			this.i.interpretLine("rudder = " + this.rudder.get());
-		} catch (ExecutionException | ParseException e) {
-			e.printStackTrace();
-		}
+		this.i.interpretLine("rudder = " + this.rudder.get());
 	}
 	public void aileronChanged() {
-		try {
-			this.i.interpretLine("aileron = " + this.alieron.get());
-		} catch (ExecutionException | ParseException e) {
-			e.printStackTrace();
-		}
+		this.i.interpretLine("aileron = " + this.alieron.get());
 	}
 	public void elevatorChanged() {
-		try {
-			this.i.interpretLine("elevator = " + this.elevator.get());
-		} catch (ExecutionException | ParseException e) {
-			e.printStackTrace();
-		}
+		this.i.interpretLine("elevator = " + this.elevator.get());
 	}
 	public void flapsChanged() {
-		try {
-			System.out.println("flaps = " + this.flaps.get());
-			this.i.interpretLine("flaps = " + this.flaps.get());
-			
-		} catch (ExecutionException | ParseException e) {
-			e.printStackTrace();
-		}
+		System.out.println("flaps = " + this.flaps.get());
+		this.i.interpretLine("flaps = " + this.flaps.get());
 	}
 	@Override
 	public void update(Observable o, Object arg) {

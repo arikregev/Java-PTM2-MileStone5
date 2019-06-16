@@ -4,11 +4,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import model.interpreter.interpreter.MainInterpreter.ParseException;
-import model.interpreter.interpreter.expression.*;
-import model.interpreter.interpreter.expression.logic.*;
-import model.interpreter.interpreter.expression.logic.comparisonExpressions.*;
-import model.interpreter.interpreter.expression.math.*;
+import model.interpreter.interpreter.Interpreter.ParseException;
+import model.interpreter.interpreter.expression.NumberExpression;
+import model.interpreter.interpreter.expression.SymbolExpression;
+import model.interpreter.interpreter.expression.logic.AndExpression;
+import model.interpreter.interpreter.expression.logic.BooleanExpression;
+import model.interpreter.interpreter.expression.logic.NotExpression;
+import model.interpreter.interpreter.expression.logic.OrExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.BiggerEqualsExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.BiggerThenExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.EqualsExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.LowerEqualsExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.LowerThenExpression;
+import model.interpreter.interpreter.expression.logic.comparisonExpressions.NotEqualsExpression;
+import model.interpreter.interpreter.expression.math.AssignmentExpression;
+import model.interpreter.interpreter.expression.math.DivideExpression;
+import model.interpreter.interpreter.expression.math.MathExpression;
+import model.interpreter.interpreter.expression.math.MinusExpression;
+import model.interpreter.interpreter.expression.math.MultiplyExpression;
+import model.interpreter.interpreter.expression.math.PlusExpression;
+import model.interpreter.interpreter.expression.math.UnaryMinusExpression;
 
 public class ExpressionBuilder {
 	

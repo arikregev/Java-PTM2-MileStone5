@@ -1,5 +1,5 @@
 package model.interpreter.interpreter.symbols;
-
+ 
 import java.util.HashMap;
 
 import model.interpreter.interpreter.symbols.Exceptions.SymbolAlreadyExistException;

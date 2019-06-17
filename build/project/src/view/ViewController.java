@@ -13,6 +13,7 @@ import java.util.Observer;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import viewmodel.ViewModel;
 
 public class ViewController implements Observer{
@@ -36,14 +38,13 @@ public class ViewController implements Observer{
 	File txt = null;
 	//int[][] map;
 	DoubleProperty alieronVal, elevatorVal, flapsval;
-	
 	//-----------------------FXML Objects-----------------------
 	@FXML
 	Button connect, textfile;
 	@FXML
 	RadioButton manual, autopilot;
 	@FXML
-	Label statlabel;
+	Label statlabel, airspeed, altitude;
 	@FXML
 	Button executecommands;
 	@FXML
@@ -69,6 +70,7 @@ public class ViewController implements Observer{
 		}
 		
 	}
+	@SuppressWarnings("static-access")
 	public void setViewModel(ViewModel vm) {
 		this.vm = vm;
 		this.alieronVal = new SimpleDoubleProperty();
@@ -80,6 +82,7 @@ public class ViewController implements Observer{
 		this.vm.elevator.bind(this.elevatorVal);
 		this.vm.flaps.bind(this.flapsval);
 		this.vm.addObserver(this);
+		this.airspeed.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.AIRSPEED));
 		
 	}
 	
@@ -160,7 +163,7 @@ public class ViewController implements Observer{
 	public File fileLoader() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Select File:");
-		fc.setInitialDirectory(new File("/"));
+		fc.setInitialDirectory(new File("./resources/"));
 		File chosen = fc.showOpenDialog(null);
 		if (chosen == null)
 			return null;
@@ -180,20 +183,19 @@ public class ViewController implements Observer{
 			return;*/
 		if(this.autopilot.isSelected()) {
 			this.autopilot.setSelected(false);
+			this.vm.changeTab();
 		}
 		this.manual.setSelected(true);
 		this.statlabel.setText("Manual Controls mode - Initiated.");
-
-		this.vm.changeTab();
 	}
 	public void AutoPilotIsPressed(){
 		if(this.manual.isSelected()) {
 			this.manual.setSelected(false);
+			this.vm.changeTab();
 		}
 		this.autopilot.setSelected(true);
 		this.statlabel.setText("AutoPilot mode - Initiated.");
 		
-		this.vm.changeTab();
 
 	}
 	public void changeThrottleOnRelease(MouseEvent event) {
@@ -205,7 +207,6 @@ public class ViewController implements Observer{
 	}
 	public void throttleValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
-			this.statlabel.setText("Throttle = " + this.throttle.getValue());
 			this.vm.throttleChanged();
 		} else {
 			this.throttle.setValue(0.0);
@@ -213,7 +214,6 @@ public class ViewController implements Observer{
 	}
 	public void rudderValueDragged(MouseEvent event) {
 		if(this.manual.isSelected()) {
-			this.statlabel.setText("Rudder = " + this.rudder.getValue());
 			this.vm.rudderChanged();
 		}else {
 			this.rudder.setValue(0.0);
@@ -255,5 +255,8 @@ public class ViewController implements Observer{
 			this.statlabel.setText(MCL);
 		}
 	}
-	
+	public void markDestOnMap(MouseEvent e) {
+		
+	}
+
 }

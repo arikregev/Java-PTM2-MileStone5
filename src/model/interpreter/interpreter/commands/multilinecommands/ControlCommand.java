@@ -9,3 +9,4 @@ public abstract class ControlCommand implements Command {
 	this.innerCommand = c;	
 	}
 }
+ 

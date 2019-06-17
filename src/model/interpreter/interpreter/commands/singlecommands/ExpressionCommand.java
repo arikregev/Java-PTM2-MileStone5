@@ -25,7 +25,7 @@ public class ExpressionCommand implements Command {
 		public void executeExpression(SymbolTable symTable) throws ExecutionException;
 	}
 	private ExpressionExecutor ee;
-	
+	 
 	public ExpressionCommand(MathExpression varValue) {
 		this.ee = (symTable) -> {varValue.calculateNumber(symTable);};
 	}

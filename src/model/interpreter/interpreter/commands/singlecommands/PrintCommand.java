@@ -27,6 +27,9 @@ public class PrintCommand implements Command {
 	private static interface Printable{
 		public void printMe(SymbolTable symTable) throws Exceptions.SymbolException;
 	}
+	
+
+	
 	//private Printable value;
 	private List<Printable> values;
 	
@@ -40,11 +43,32 @@ public class PrintCommand implements Command {
 			value.printMe(symTable);
 		return true;
 	}
+	
+	
 	public static class Factory extends CommandFactory{
-		PrintStream printer;
 		
-		public Factory(PrintStream printer) {
+		public static interface Printer {
+			public void print(String s);
+			public void println(String s);
+		}
+		
+		Printer printer;
+		
+		public Factory(Printer printer) {
 			this.printer = printer;
+		}
+		
+		public Factory(PrintStream printStream) {
+			this.printer = new Printer() {
+				@Override
+				public void print(String s) {
+					printStream.print(s);
+				}
+				@Override
+				public void println(String s) {
+					printStream.println(s);
+				}
+			};
 		}
 		
 		@Override
@@ -64,10 +88,10 @@ public class PrintCommand implements Command {
 				currentTokens = new LinkedList<>();
 			}
 			values.add(makePrintableFromTokens(currentTokens));
-			values.add((SymbolTable symTable)->{printer.println();});
+			values.add((SymbolTable symTable)->{printer.println("");});
 			return new PrintCommand(values);
 		}
-		
+		 
 		private Printable makePrintableFromTokens(List<String> currentTokens) throws ParseException{
 			if (currentTokens.isEmpty())
 				throw new ParseException("Invalid expression at print command");
@@ -78,7 +102,7 @@ public class PrintCommand implements Command {
 				return (SymbolTable symTable)->{printer.print(s.substring(1, s.length()-1));};
 			} 
 			MathExpression mathExp = new ExpressionBuilder().createMathExpression(currentTokens);
-			return (SymbolTable symTable)->{printer.print(mathExp.calculateNumber(symTable));};
+			return (SymbolTable symTable)->{printer.print(Double.toString(mathExp.calculateNumber(symTable)));};
 		}
 	}
 

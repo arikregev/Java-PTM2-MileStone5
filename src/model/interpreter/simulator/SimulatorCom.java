@@ -97,7 +97,7 @@ public class SimulatorCom {
 		return this.varMap.get(s);
 	}
 	public void setVal(String path, Double d) {
-		System.out.println(path + " " + d);
+		//System.out.println(path + " " + d);
 		this.varMap.put(path, d);
 		this.pw.print("set " + path + " " + d.toString() + "\r\n");
 		this.pw.flush();

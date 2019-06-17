@@ -20,6 +20,7 @@ public class Main extends Application {
 		Interpreter i = new Interpreter(new SimPaths().getPaths());
 		ViewModel vm = new ViewModel(i);
 		t = new Thread(()->{ i.run(); });
+		t.setDaemon(true);
 		t.start();
 		ViewController vc = fxml.getController();
 		vc.setViewModel(vm);

@@ -1,12 +1,15 @@
 package view;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -16,9 +19,24 @@ public class GuideMap extends Canvas{
 	private double[][] rawData;
 	private double startX, startY;
 	private double blockSize;
+	private double BlockW, BlockH;
 	private int maxValue;
+	private double destX, destY;
+	private double currPosX, currPosY;
+	private Image plane;
+	private Image target;
 	private GraphicsContext gc = getGraphicsContext2D();
+	private boolean isMarked = false;
 	
+	public GuideMap() {
+		try {
+			this.plane = new Image(new FileInputStream("./resources/Plane-1.png"));
+			this.target = new Image(new FileInputStream("./resources/close.png"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private double checkMax(double arr[][]) {
 		double max = arr[0][0];
 		for(double[] is: arr)
@@ -38,11 +56,14 @@ public class GuideMap extends Canvas{
 	public void redraw() {
 		double W = this.getWidth();
 		double H = this.getHeight();
-		double w = W / this.rawData[0].length;
-		double h = H / this.rawData.length;
+		this.gc.clearRect(0, 0, W, H);
+		this.BlockW = W / this.rawData[0].length;
+		this.BlockH = H / this.rawData.length;
 		this.adaptMapToApp(rawData, this.checkMax(rawData));
-		if (h > 20)
-			gc.setFont(new Font(h * 0.5));
+		this.currPosX = 0.0;
+		this.currPosY = 0.0;
+		if (this.BlockH > 20)
+			gc.setFont(new Font(this.BlockH * 0.5));
 		if(this.worldData != null)
 			for(int i = 0 ; i < this.worldData.length ; i++)
 				for(int j = 0 ; j < this.rawData[i].length; j++) {
@@ -54,15 +75,15 @@ public class GuideMap extends Canvas{
 						String s = String.format("%02X", (int)(2 * 0xff * (1-this.worldData[i][j])));
 						c = Color.web("#" + s + "FF00");
 					}
-					gc.setFill(c);
-					gc.fillRect(j*w, i*h, w, h);
-					if (h > 20) {
-						gc.setFill(Color.BLACK);
-						gc.fillText((int) this.rawData[i][j] + " ",  j*w + 4, i*h + w - 4);
+					this.gc.setFill(c);
+					this.gc.fillRect(j*this.BlockW, i*this.BlockH, this.BlockW, this.BlockH);
+					if (this.BlockH > 20) {
+						this.gc.setFill(Color.BLACK);
+						this.gc.fillText((int) this.rawData[i][j] + " ",  j*this.BlockW + 4, i*this.BlockH + this.BlockW - 4);
 					}
 				}
-	}
-							
+		this.setPlane(this.currPosX, this.currPosY);
+	}						
 	public void generateMap(File mapCsvFile) {
 		try {
 			Scanner scanner = new Scanner(mapCsvFile);
@@ -102,6 +123,21 @@ public class GuideMap extends Canvas{
 			e.printStackTrace();
 		}
 	}
-	
+	public void setPlane(double posX, double posY) {
+			this.gc.drawImage(this.plane, posX, posY, 25, 25);		
+	}
+	public void markDest(double posX, double posY) {
+		this.isMarked = true;
+		this.destX = (int)(posX / this.BlockW);
+		this.destY = (int)(posY / this.BlockH);
+		GraphicsContext gc = getGraphicsContext2D();
+		gc.drawImage(this.target, (int)posX, (int)posY); // draw the dest
+			
+	}
+	public void mapClicked(MouseEvent e) {
+		double corX = e.getX();
+		double corY = e.getY();
+		
+	}
 
 }

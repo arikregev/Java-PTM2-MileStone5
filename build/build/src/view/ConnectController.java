@@ -40,6 +40,7 @@ public class ConnectController implements Observer{
 				return;
 			}
 			if(connect(this.ip, this.telnetPort, this.listenPort, this.rateNum)) {
+				this.mainWindow.vm.setConnected(true);
 				this.mainWindow.closeConnectWindow();	
 			}
 			else status.setText("Connect Error");
@@ -62,6 +63,7 @@ public class ConnectController implements Observer{
 			this.vm.sendCommandToInterpreter("var aileron = bind \"/controls/flight/aileron\"");
 			this.vm.sendCommandToInterpreter("var elevator = bind \"/controls/flight/elevator\"");
 			this.vm.sendCommandToInterpreter("var flaps = bind \"/controls/flight/flaps\"");
+			this.vm.sendCommandToInterpreter("var airspeed = bind \"/instrumentation/airspeed-indicator/indicated-speed-kt\"");
 			return true;
 		}
 		return false;

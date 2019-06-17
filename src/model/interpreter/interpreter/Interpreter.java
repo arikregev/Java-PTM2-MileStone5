@@ -8,6 +8,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.application.Platform;
+
+import java.util.Observable;
+
 import model.interpreter.interpreter.commands.Command;
 import model.interpreter.interpreter.commands.ExecutionException;
 import model.interpreter.interpreter.commands.factory.CommandFactory;
@@ -20,12 +24,13 @@ import model.interpreter.interpreter.commands.servercommands.DisconnectCommand;
 import model.interpreter.interpreter.commands.servercommands.OpenDataServerCommand;
 import model.interpreter.interpreter.commands.singlecommands.ExpressionCommand;
 import model.interpreter.interpreter.commands.singlecommands.PrintCommand;
+import model.interpreter.interpreter.commands.singlecommands.PrintCommand.Factory.Printer;
 import model.interpreter.interpreter.commands.singlecommands.ReturnCommand;
 import model.interpreter.interpreter.commands.singlecommands.SleepCommand;
 import model.interpreter.interpreter.commands.singlecommands.VarCommand;
 import model.interpreter.interpreter.symbols.SymbolTable;
 
-public class Interpreter {
+public class Interpreter extends Observable {
 	@SuppressWarnings("serial")
 	public static class ParseException extends Exception {
 
@@ -52,6 +57,30 @@ public class Interpreter {
 	private final String lexerRegex = "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|-?\\d+\\.?\\d*|-?\\d*\\.?\\d+|\".*\"|==|!=|<=|>=|<|>|\\+|-|\\*|\\/|&&|\\|\\||!|=|\\(|\\)|\\{|\\}|,|\\w+)";
 	private LinkedBlockingQueue<String> linesQueue;
 	private volatile boolean reset = false;
+	private Printer printToViewModel = new Printer() {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		@Override
+		public void println(String s) {
+			print(s);
+			
+			String output = builder.toString();
+			
+			// TODO: send to view model
+			Platform.runLater(()-> {
+				Interpreter.this.setChanged();
+				Interpreter.this.notifyObservers(output);
+			});
+			
+			builder.delete(0, builder.length());
+		}
+		
+		@Override
+		public void print(String s) {
+			builder.append(s);
+		}
+	};
 	
 	public Interpreter(String[] simPaths) {
 		commandMap = new HashMap<>();
@@ -63,7 +92,7 @@ public class Interpreter {
 		commandMap.put("connect", new ConnectCommand.Factory());
 		commandMap.put("while", new WhileCommand.Factory());
 		commandMap.put("if", new IfCommand.Factory());
-		commandMap.put("print", new PrintCommand.Factory(System.out));
+		commandMap.put("print", new PrintCommand.Factory(printToViewModel));
 		commandMap.put("sleep", new SleepCommand.Factory());
 		commandMap.put("return", new ReturnCommand.Factory());
 		commandMap.put("disconnect", new DisconnectCommand.Factory());
@@ -108,7 +137,7 @@ public class Interpreter {
 			linesQueue.clear();	
 		}
 		symTable.setInterrupt(true);
-		
+		 
 	}
 	public double getReturnValue() {
 		return symTable.getReturnValue();
@@ -183,5 +212,6 @@ public class Interpreter {
 			return new ExpressionCommand.Factory().create(tokens);
 		return commandMap.get(tokens.remove(0)).create(tokens);
 	}
+
 	
 }

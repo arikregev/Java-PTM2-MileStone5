@@ -30,7 +30,7 @@ public class VarCommand implements Command {
 		public void createSymbol(SymbolTable symTable) throws Exceptions.SymbolException;
 	}
 	private SymbolFactory s;
-	
+	 
 	public VarCommand(String symName) {
 		this.s = (symTable)->{
 			symTable.addSymbol(symName, null);

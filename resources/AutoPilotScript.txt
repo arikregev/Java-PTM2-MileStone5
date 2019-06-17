@@ -1,10 +1,8 @@
 var breaks   = bind "/controls/flight/speedbrake"
 var heading  = bind "/instrumentation/heading-indicator/indicated-heading-deg"
 var offset   = bind "/instrumentation/heading-indicator/offset-deg"
-var airspeed = bind "/instrumentation/airspeed-indicator/indicated-speed-kt"
 var roll     = bind "/instrumentation/attitude-indicator/indicated-roll-deg"
 var pitch    = bind "/instrumentation/attitude-indicator/internal-pitch-deg"
-var alt      = bind "/instrumentation/altimeter/indicated-altitude-ft"
 breaks = 0
 throttle = 1
 var h0 = heading

@@ -35,7 +35,7 @@
                   </ButtonBar>
                </top>
                <center>
-                  <GuideMap fx:id="guidemap" height="281.0" width="321.0" BorderPane.alignment="CENTER" />
+                  <GuideMap fx:id="guidemap" height="281.0" onMouseClicked="#markDestOnMap" width="321.0" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </children>
@@ -74,7 +74,7 @@
    <right>
       <AnchorPane prefHeight="322.0" prefWidth="302.0" BorderPane.alignment="CENTER">
          <children>
-            <RadioButton fx:id="manual" layoutX="20.0" layoutY="5.0" mnemonicParsing="false" onAction="#ManualIsPressed" text="Manual Contorls" />
+            <RadioButton fx:id="manual" layoutX="8.0" layoutY="4.0" mnemonicParsing="false" onAction="#ManualIsPressed" text="Manual Contorls" />
             <Slider fx:id="rudder" layoutX="53.0" layoutY="287.0" max="1.0" min="-1.0" onMouseDragged="#rudderValueDragged" onMouseReleased="#changeRudderOnRelease" prefHeight="16.0" prefWidth="200.0" showTickLabels="true" />
             <Slider fx:id="throttle" layoutX="20.0" layoutY="62.0" max="1.0" onMouseDragged="#throttleValueDragged" onMouseReleased="#changeThrottleOnRelease" orientation="VERTICAL" prefHeight="190.0" prefWidth="16.0" showTickLabels="true" />
             <Circle fx:id="joystickBorder" fill="#babfc3" layoutX="153.0" layoutY="161.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
@@ -100,8 +100,12 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Slider fx:id="flaps" blockIncrement="0.3333334" layoutX="233.0" layoutY="54.0" max="1.0" onMouseDragged="#flapsValueDragged" onMouseReleased="#changeFlapsOnRelease" prefHeight="16.0" prefWidth="56.0" />
-            <Label layoutX="231.0" layoutY="71.0" text="&lt;-flaps-&gt;" />
+            <Slider fx:id="flaps" blockIncrement="0.3333334" layoutX="37.0" layoutY="28.0" max="1.0" onMouseDragged="#flapsValueDragged" onMouseReleased="#changeFlapsOnRelease" prefHeight="16.0" prefWidth="56.0" />
+            <Label layoutX="32.0" layoutY="45.0" text="&lt;-flaps-&gt;" />
+            <Label layoutX="217.0" layoutY="14.0" prefHeight="17.0" prefWidth="60.0" text="Speed:" />
+            <Label fx:id="airspeed" layoutX="283.0" layoutY="14.0" text="0" />
+            <Label layoutX="217.0" layoutY="34.0" text="Altitude:" />
+            <Label fx:id="altitude" layoutX="283.0" layoutY="35.0" text="0" />
          </children>
       </AnchorPane>
    </right>

@@ -1,6 +1,6 @@
 package model.interpreter.interpreter.commands.multilinecommands;
 
-
+ 
 import java.util.List;
 
 import model.interpreter.interpreter.Interpreter.ParseException;

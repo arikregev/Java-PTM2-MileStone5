@@ -19,11 +19,11 @@ import model.interpreter.interpreter.symbols.SymbolTable;
  */
 public class SleepCommand implements Command {
 	private MathExpression parameter;
-	
+	 
 	public SleepCommand(MathExpression parameter) {
 		this.parameter = parameter;
 	}
-
+ 
 	@Override
 	public boolean execute(SymbolTable symTable) throws ExecutionException {
 		try {

@@ -26,7 +26,9 @@ public class SimPaths {
 			"/controls/engines/current-engine/throttle",
 			"/engines/engine/rpm",
 			"/controls/flight/speedbrake",
-			"/instrumentation/heading-indicator/offset-deg"
+			"/instrumentation/heading-indicator/offset-deg",
+			"/instrumentation/gps/indicated-latitude-deg",
+			"/instrumentation/gps/indicated-longitude-deg"
 			};
 	
 	public String[] getPaths() {

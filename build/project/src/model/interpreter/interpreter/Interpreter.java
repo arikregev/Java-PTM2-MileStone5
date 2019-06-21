@@ -110,9 +110,10 @@ public class Interpreter extends Observable {
 	public void run() {
 		while(true) {
 			while(!reset) {
+				String line = "";
 				try {
 					symTable.setInterrupt(false);
-					String line = linesQueue.take();
+					line = linesQueue.take();
 					if(reset) break;
 					
 					tokenStream.addAll(lexer(line));
@@ -120,7 +121,7 @@ public class Interpreter extends Observable {
 						c.execute(symTable);	
 					}
 				} catch (InterruptedException | ExecutionException | ParseException e) {
-					System.out.println(e.getMessage());
+					System.out.println("Error in line: " + line);
 					e.printStackTrace();
 				}
 			}

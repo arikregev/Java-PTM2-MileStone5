@@ -12,17 +12,21 @@ import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import model.interpreter.interpreter.Interpreter;
 import model.pathsolver.PathSolver;
 import model.pathsolver.PathSolver.SolverExceptionHolder;
+import model.pathsolver.PathSolverFactory;
 
 
 public class ViewModel extends Observable implements Observer{
 	private Interpreter i; // Model MS-4
-	private PathSolver pathSolver;
+	public StringProperty solverIp;
+	public StringProperty solverPort;
+	PathSolverFactory pathSolverFactory;
 	public StringProperty autoPilotText;
 	public DoubleProperty throttle, rudder, alieron, elevator, flaps;
 	private volatile boolean isConnected = false;
@@ -40,9 +44,11 @@ public class ViewModel extends Observable implements Observer{
 	public static final String LATITUDE = "lat";
 	public static final String LONGITUDE = "long";
 	
-	public ViewModel(Interpreter i, PathSolver pathSolver){
+	public ViewModel(Interpreter i, PathSolverFactory pathSolverFactory){
 		this.i = i;
-		this.pathSolver = pathSolver;
+		this.pathSolverFactory = pathSolverFactory;
+		this.solverIp = new SimpleStringProperty();
+		this.solverPort = new SimpleStringProperty();
 		this.autoPilotText = new SimpleStringProperty();
 		this.throttle = new SimpleDoubleProperty();
 		this.rudder = new SimpleDoubleProperty();
@@ -50,7 +56,6 @@ public class ViewModel extends Observable implements Observer{
 		this.elevator = new SimpleDoubleProperty();
 		this.flaps = new SimpleDoubleProperty();
 		this.i.addObserver(this);
-		this.pathSolver.addObserver(this);
 		this.stringPropertiesMap = new HashMap<String, StringProperty>();
 		this.doublePropertiesMap = new HashMap<String, DoubleProperty>();
 		this.stringPropertiesMap.put(AIRSPEED, new SimpleStringProperty());
@@ -147,8 +152,8 @@ public class ViewModel extends Observable implements Observer{
 		this.isConnected = isConnected;
 		this.startWatchedVals();
 	}
-	
 	public void generatePath(int[][] map, int[] src, int[] dest) {
-		this.pathSolver.solve(map, src, dest);
+		PathSolver pathSolver = pathSolverFactory.create();
+		pathSolver.solve(map, src, dest);
 	}
 }

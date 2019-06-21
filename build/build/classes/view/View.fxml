@@ -27,7 +27,7 @@
                     <buttons>
                       <Button fx:id="connect" mnemonicParsing="false" onAction="#connect" text="Connect" />
                         <Button mnemonicParsing="false" onAction="#loadData" text="Load Data" />
-                      <Button fx:id="calc" mnemonicParsing="false" prefHeight="25.0" prefWidth="105.0" text="Calculate Path" />
+                      <Button fx:id="calc" mnemonicParsing="false" onAction="#calculate" prefHeight="25.0" prefWidth="105.0" text="Calculate Path" />
                     </buttons>
                      <BorderPane.margin>
                         <Insets right="15.0" />
@@ -35,7 +35,7 @@
                   </ButtonBar>
                </top>
                <center>
-                  <GuideMap fx:id="guidemap" onMouseClicked="markDestOnMap" height="281.0" width="321.0" BorderPane.alignment="CENTER" />
+                  <GuideMap fx:id="guidemap" height="281.0" onMouseClicked="#markDestOnMap" width="321.0" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </children>
@@ -102,10 +102,22 @@
             </Button>
             <Slider fx:id="flaps" blockIncrement="0.3333334" layoutX="37.0" layoutY="28.0" max="1.0" onMouseDragged="#flapsValueDragged" onMouseReleased="#changeFlapsOnRelease" prefHeight="16.0" prefWidth="56.0" />
             <Label layoutX="32.0" layoutY="45.0" text="&lt;-flaps-&gt;" />
-            <Label layoutX="226.0" layoutY="14.0" prefHeight="17.0" prefWidth="60.0" text="AirSpeed:" />
-            <Label fx:id="airspeed" layoutX="292.0" layoutY="14.0" text="0" />
-            <Label layoutX="227.0" layoutY="34.0" text="Altitude:" />
-            <Label fx:id="altitude" layoutX="292.0" layoutY="35.0" text="0" />
+            <Label layoutX="212.0" layoutY="14.0" prefHeight="17.0" prefWidth="60.0" text="Speed:">
+               <font>
+                  <Font size="10.0" />
+               </font></Label>
+            <Label fx:id="airspeed" layoutX="271.0" layoutY="14.0" text="0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label layoutX="212.0" layoutY="34.0" text="Altitude:">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="altitude" layoutX="271.0" layoutY="35.0" text="0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
          </children>
       </AnchorPane>
    </right>

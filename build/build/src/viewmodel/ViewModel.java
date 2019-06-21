@@ -1,20 +1,32 @@
 package viewmodel;
 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import model.interpreter.interpreter.Interpreter;
+import model.pathsolver.PathSolver;
+import model.pathsolver.PathSolver.SolverExceptionHolder;
+import model.pathsolver.PathSolverFactory;
 
 
 public class ViewModel extends Observable implements Observer{
 	private Interpreter i; // Model MS-4
+	public StringProperty solverIp;
+	public StringProperty solverPort;
+	PathSolverFactory pathSolverFactory;
 	public StringProperty autoPilotText;
 	public DoubleProperty throttle, rudder, alieron, elevator, flaps;
 	private volatile boolean isConnected = false;
@@ -22,11 +34,21 @@ public class ViewModel extends Observable implements Observer{
 	public HashMap<String, DoubleProperty> doublePropertiesMap;
 	public Timer t;
 	public TimerTask timerTask;
+	
+	private Socket conSrv = null;
+	private PrintWriter out = null;
+	private BufferedReader in = null;
+	
 	public static final String AIRSPEED = "airspeed";
+	public static final String ALT = "alt";
+	public static final String LATITUDE = "lat";
+	public static final String LONGITUDE = "long";
 	
-	
-	public ViewModel(Interpreter i){
+	public ViewModel(Interpreter i, PathSolverFactory pathSolverFactory){
 		this.i = i;
+		this.pathSolverFactory = pathSolverFactory;
+		this.solverIp = new SimpleStringProperty();
+		this.solverPort = new SimpleStringProperty();
 		this.autoPilotText = new SimpleStringProperty();
 		this.throttle = new SimpleDoubleProperty();
 		this.rudder = new SimpleDoubleProperty();
@@ -37,22 +59,26 @@ public class ViewModel extends Observable implements Observer{
 		this.stringPropertiesMap = new HashMap<String, StringProperty>();
 		this.doublePropertiesMap = new HashMap<String, DoubleProperty>();
 		this.stringPropertiesMap.put(AIRSPEED, new SimpleStringProperty());
-		
+		this.stringPropertiesMap.put(ALT, new SimpleStringProperty());
+		this.doublePropertiesMap.put(LATITUDE, new SimpleDoubleProperty());
+		this.doublePropertiesMap.put(LONGITUDE, new SimpleDoubleProperty());
 		//add more
-		this.t = new Timer();
+		this.t = new Timer(true);
 		this.timerTask = new TimerTask() {
 
 			@Override
 			public void run() {
 				ViewModel.this.i.interpretLine("print \"airspeed=\", airspeed");		
-
+				ViewModel.this.i.interpretLine("print \"alt=\", alt");
+				ViewModel.this.i.interpretLine("print \"lat=\", lat");
+				ViewModel.this.i.interpretLine("print \"long=\", long");
+				
 			}
-			
 		};
 	}
 	
 	public void startWatchedVals() {
-		this.t.scheduleAtFixedRate(this.timerTask, 5000, 500);
+		this.t.scheduleAtFixedRate(this.timerTask, 10000, 500);
 	}
 	public void stopWatchVals() {
 		this.t.cancel();
@@ -105,6 +131,19 @@ public class ViewModel extends Observable implements Observer{
 				return;
 			}
 		}
+		if(o instanceof PathSolver) {
+			Platform.runLater(()->{
+				if(arg instanceof List) {
+					this.setChanged();
+					this.notifyObservers(arg);
+				}
+				if(arg instanceof SolverExceptionHolder) {
+					SolverExceptionHolder e = (SolverExceptionHolder)arg;
+					this.setChanged();
+					this.notifyObservers(e.e.getMessage());
+				}
+			});
+		}
 	}
 	public boolean isConnected() {
 		return isConnected;
@@ -112,5 +151,9 @@ public class ViewModel extends Observable implements Observer{
 	public void setConnected(boolean isConnected) {
 		this.isConnected = isConnected;
 		this.startWatchedVals();
+	}
+	public void generatePath(int[][] map, int[] src, int[] dest) {
+		PathSolver pathSolver = pathSolverFactory.create();
+		pathSolver.solve(map, src, dest);
 	}
 }

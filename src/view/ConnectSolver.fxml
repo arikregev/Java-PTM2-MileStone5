@@ -24,9 +24,9 @@
             <Font size="15.0" />
          </font>
       </Text>
-      <TextField fx:id="ipText" layoutX="204.0" layoutY="45.0" prefHeight="27.0" prefWidth="209.0" promptText="IP Address" />
-      <TextField fx:id="portText" layoutX="204.0" layoutY="84.0" prefHeight="27.0" prefWidth="117.0" promptText="Telnet Port" />
-      <Label fx:id="status" layoutX="9.0" layoutY="141.0" text="Waiting for connection details..." />
+      <TextField fx:id="ipText" layoutX="204.0" layoutY="45.0" prefHeight="27.0" prefWidth="209.0" promptText="Solver IP Address" />
+      <TextField fx:id="portText" layoutX="204.0" layoutY="84.0" prefHeight="27.0" prefWidth="117.0" promptText="Solver Port" />
+      <Label fx:id="status" layoutX="9.0" layoutY="141.0" text="" />
       <Button fx:id="connect" layoutX="350.0" layoutY="136.0" mnemonicParsing="false" onAction="#execute" text="Connect" />
       <Button fx:id="defualts" layoutX="222.0" layoutY="136.0" mnemonicParsing="false" onAction="#setDefualts" text="Defualt Settings" />
    </children>

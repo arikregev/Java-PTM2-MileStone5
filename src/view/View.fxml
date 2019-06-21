@@ -15,7 +15,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
-
 <?import view.GuideMap?>
 
 <BorderPane prefHeight="341.0" prefWidth="964.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ViewController">
@@ -28,7 +27,7 @@
                     <buttons>
                       <Button fx:id="connect" mnemonicParsing="false" onAction="#connect" text="Connect" />
                         <Button mnemonicParsing="false" onAction="#loadData" text="Load Data" />
-                      <Button fx:id="calc" mnemonicParsing="false" prefHeight="25.0" prefWidth="105.0" text="Calculate Path" />
+                      <Button fx:id="calc" mnemonicParsing="false" onAction="#calculate" prefHeight="25.0" prefWidth="105.0" text="Calculate Path" />
                     </buttons>
                      <BorderPane.margin>
                         <Insets right="15.0" />

@@ -26,6 +26,7 @@ public class Exceptions {
 	
 		public SymbolAlreadyExistException(String symbolName) {
 			super(symbolName);
+			System.out.println("Error Symbol already Exists: " + symbolName);
 		}
 	}
 

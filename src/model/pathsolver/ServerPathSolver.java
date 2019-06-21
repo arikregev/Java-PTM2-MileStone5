@@ -12,7 +12,7 @@ public class ServerPathSolver extends PathSolver {
 	private int port;
 	private String ip;
 	private Thread t;
-	private volatile int curRequest = 0; 
+	private volatile int curRequest = 0;
 	
 	public ServerPathSolver(String ip, int port) {
 		this.ip = ip;
@@ -55,6 +55,11 @@ public class ServerPathSolver extends PathSolver {
 	
 	private String arrayToString(int[] r) {
 		return Arrays.toString(r).replaceAll("\\[|\\]|\\s", "");
+	}
+	
+	public void connectToPathSolver(String ip, int port) {
+		this.ip = ip;
+		this.port = port;
 	}
 
 }

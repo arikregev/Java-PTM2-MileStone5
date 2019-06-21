@@ -1,6 +1,8 @@
 package view;
 	
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.interpreter.interpreter.Interpreter;
+import model.pathsolver.PathSolver;
+import model.pathsolver.PathSolverFactory;
+import model.pathsolver.ServerPathSolver;
+import model.pathsolver.StubPathSolver;
+import viewmodel.ServerPathSolverFactory;
 import viewmodel.ViewModel;
 
 
@@ -15,10 +22,12 @@ public class Main extends Application {
 	Thread t = null;
 	@Override
 	public void start(Stage primaryStage) throws IOException {
+		Interpreter i = new Interpreter(new SimPaths().getPaths());
+		ServerPathSolverFactory ps = new ServerPathSolverFactory();
+		ViewModel vm = new ViewModel(i, ps);
+		ps.setViewModel(vm);
 		FXMLLoader fxml = new FXMLLoader();
 		BorderPane root = fxml.load(getClass().getResource("View.fxml").openStream());
-		Interpreter i = new Interpreter(new SimPaths().getPaths());
-		ViewModel vm = new ViewModel(i);
 		t = new Thread(()->{ i.run(); });
 		t.setDaemon(true);
 		t.start();

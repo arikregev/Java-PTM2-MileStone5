@@ -187,8 +187,13 @@ public class GuideMap extends Canvas{
 	}
 	
 	public void drawPlane() {
-		GraphicsContext gc = getGraphicsContext2D();	
-		gc.drawImage(this.plane, this.currGuiPosX, this.currGuiPosY, 25, 25);		
+		GraphicsContext gc = getGraphicsContext2D();
+		double size = 25;
+		gc.drawImage(this.plane,
+				realToMiddleBlockX(this.currGuiPosX) - size / 2, 
+				realToMiddleBlockY(this.currGuiPosY) - size / 2,
+				size, 
+				size);		
 	}
 	
 	public void drawDest() {

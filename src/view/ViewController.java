@@ -136,24 +136,29 @@ public class ViewController implements Observer{
 			this.statlabel.setText("Connection sent successfully to Interpreter");
 		}
 	}
-	public void connectSolver() throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("Connect.fxml"));
-		AnchorPane newWindow = (AnchorPane) loader.load();
-		ConnectSolverController controller = loader.getController();
-		controller.setMainWindow(this);
-		controller.setViewModel(this.vm);
-		this.connectSolverWindow = new Stage();
-		this.connectSolverWindow.initModality(Modality.WINDOW_MODAL);
-		this.connectSolverWindow.initOwner(connect.getScene().getWindow());
-		Scene scene = new Scene(newWindow);
-		this.connectSolverWindow.setScene(scene);
-		this.connectSolverWindow.show();
+	public void connectSolver() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("ConnectSolver.fxml"));
+			AnchorPane newWindow = (AnchorPane) loader.load();
+			ConnectSolverController controller = loader.getController();
+			controller.setMainWindow(this);
+			controller.setViewModel(this.vm);
+			this.connectSolverWindow = new Stage();
+			this.connectSolverWindow.initModality(Modality.WINDOW_MODAL);
+			this.connectSolverWindow.initOwner(connect.getScene().getWindow());
+			Scene scene = new Scene(newWindow);
+			this.connectSolverWindow.setScene(scene);
+			this.connectSolverWindow.show();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void closeConnectSolverWindow() {
-		if(this.connectWindow != null) {
-			this.connectWindow.close();
-			this.connectWindow = null;
-			this.statlabel.setText("Connection sent successfully to Interpreter");
+		if(this.connectSolverWindow != null) {
+			this.connectSolverWindow.close();
+			this.connectSolverWindow = null;
+			//this.statlabel.setText("Connection sent successfully to Interpreter");
 		}
 	}
 
@@ -165,14 +170,6 @@ public class ViewController implements Observer{
 		} else
 			this.statlabel.setText("Error with CSV file, Try Again");
 	}
-
-//	public void calcData() {
-//		if (this.csv != null) {
-//
-//		} else {
-//			/* Throw Exception */
-//		}
-//	}
 
 	public void loadTextFile() throws IOException {
 		this.txt = this.fileLoader();
@@ -288,19 +285,7 @@ public class ViewController implements Observer{
 	}
 	public void markDestOnMap(MouseEvent e) {
 		this.guidemap.setDest(e.getX(), e.getY());
-		
-		int[][] map = this.guidemap.getRawTable();
-		
-		int[] src = new int[2];
-		src[0] = this.guidemap.getCurrentXIndex();
-		src[1] = this.guidemap.getCurrentYIndex();
-		
-		int[] dst = new int[2];
-		dst[0] = this.guidemap.getDestXIndex();
-		dst[1] = this.guidemap.getDestYIndex();
-		System.out.println("" + dst[0] + "," + dst[1]);
-		
-		this.vm.generatePath(map, src, dst);
+		this.guidemap.drawDest();
 	}
 	public void disableRunningVars() {
 		this.airspeed.textProperty().unbind();
@@ -311,5 +296,21 @@ public class ViewController implements Observer{
 	public void setRunningVars() {
 		this.airspeed.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.AIRSPEED));
 		this.altitude.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.ALT));
+	}
+	public void calculate() {
+		this.connectSolver();
+	}
+	public void executeCalculate() {
+		int[][] map = this.guidemap.getRawTable();
+		
+		int[] src = new int[2];
+		src[0] = this.guidemap.getCurrentXIndex();
+		src[1] = this.guidemap.getCurrentYIndex();
+		
+		int[] dst = new int[2];
+		dst[0] = this.guidemap.getDestXIndex();
+		dst[1] = this.guidemap.getDestYIndex();
+		
+		this.vm.generatePath(map, src, dst);
 	}
 }

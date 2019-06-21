@@ -21,4 +21,5 @@ public abstract class PathSolver extends Observable{
 		this.setChanged();
 		this.notifyObservers(e);
 	}
+	
 }

@@ -65,6 +65,8 @@ public class ConnectController implements Observer{
 			this.vm.sendCommandToInterpreter("var flaps = bind \"/controls/flight/flaps\"");
 			this.vm.sendCommandToInterpreter("var airspeed = bind \"/instrumentation/airspeed-indicator/indicated-speed-kt\"");
 			this.vm.sendCommandToInterpreter("var alt      = bind \"/instrumentation/altimeter/indicated-altitude-ft\"");
+			this.vm.sendCommandToInterpreter("var lat      = bind \"/instrumentation/gps/indicated-latitude-deg\"");
+			this.vm.sendCommandToInterpreter("var long      = bind \"/instrumentation/gps/indicated-longitude-deg\"");
 			return true;
 		}
 		return false;

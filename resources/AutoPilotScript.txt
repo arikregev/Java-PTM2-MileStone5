@@ -10,8 +10,8 @@ while alt < 1000 {
 	rudder = (h0 - heading + 0.343)/120
 	aileron = - roll / 70
 	elevator = pitch / 50
-	print alt
-	print rudder
+	print "long=", long
+	print "lat=", lat
 	sleep 50
 }
 print "Done"

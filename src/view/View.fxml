@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
+
 <?import view.GuideMap?>
 
 <BorderPane prefHeight="341.0" prefWidth="964.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ViewController">
@@ -102,10 +103,22 @@
             </Button>
             <Slider fx:id="flaps" blockIncrement="0.3333334" layoutX="37.0" layoutY="28.0" max="1.0" onMouseDragged="#flapsValueDragged" onMouseReleased="#changeFlapsOnRelease" prefHeight="16.0" prefWidth="56.0" />
             <Label layoutX="32.0" layoutY="45.0" text="&lt;-flaps-&gt;" />
-            <Label layoutX="217.0" layoutY="14.0" prefHeight="17.0" prefWidth="60.0" text="Speed:" />
-            <Label fx:id="airspeed" layoutX="283.0" layoutY="14.0" text="0" />
-            <Label layoutX="217.0" layoutY="34.0" text="Altitude:" />
-            <Label fx:id="altitude" layoutX="283.0" layoutY="35.0" text="0" />
+            <Label layoutX="212.0" layoutY="14.0" prefHeight="17.0" prefWidth="60.0" text="Speed:">
+               <font>
+                  <Font size="10.0" />
+               </font></Label>
+            <Label fx:id="airspeed" layoutX="271.0" layoutY="14.0" text="0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label layoutX="212.0" layoutY="34.0" text="Altitude:">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="altitude" layoutX="271.0" layoutY="35.0" text="0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
          </children>
       </AnchorPane>
    </right>

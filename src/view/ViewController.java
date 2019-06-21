@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -33,6 +34,7 @@ import viewmodel.ViewModel;
 
 public class ViewController implements Observer{
 	Stage connectWindow = null;
+	Stage connectSolverWindow;
 	ViewModel vm = null;
 	File csv = null;
 	File txt = null;
@@ -58,17 +60,25 @@ public class ViewController implements Observer{
 	//-----------------------Repeated Objects-----------------------
 	String MCL = "Manual Controls locked! - To manualy control the aircraft you need to press the Manual Controls button first";
 	String APL = "Cannot Execute! = To use the AutoPilot option you need to press the AutoPilot mode Button first";
-
+	String na = "N/A";
 	public ViewController() {
 		this.guidemap = new GuideMap();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update(Observable o, Object arg) {
-		if(o instanceof ViewModel) {
-			this.history.appendText(arg + "\n");
+		if(o instanceof ViewModel) { 
+			if(arg instanceof String) {
+				String msg = (String)arg;
+				this.statlabel.setText(msg);
+			}
+			if(arg instanceof List) {
+				this.guidemap.setDirections((List<String>)arg);
+				this.guidemap.redraw();
+				this.guidemap.drawPath();
+			}
 		}
-		
 	}
 	@SuppressWarnings("static-access")
 	public void setViewModel(ViewModel vm) {
@@ -82,8 +92,7 @@ public class ViewController implements Observer{
 		this.vm.elevator.bind(this.elevatorVal);
 		this.vm.flaps.bind(this.flapsval);
 		this.vm.addObserver(this);
-		this.airspeed.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.AIRSPEED));
-		this.altitude.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.ALT));
+		this.guidemap.setViewModel(vm);
 		
 	}
 	
@@ -127,6 +136,26 @@ public class ViewController implements Observer{
 			this.statlabel.setText("Connection sent successfully to Interpreter");
 		}
 	}
+	public void connectSolver() throws IOException {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("Connect.fxml"));
+		AnchorPane newWindow = (AnchorPane) loader.load();
+		ConnectSolverController controller = loader.getController();
+		controller.setMainWindow(this);
+		controller.setViewModel(this.vm);
+		this.connectSolverWindow = new Stage();
+		this.connectSolverWindow.initModality(Modality.WINDOW_MODAL);
+		this.connectSolverWindow.initOwner(connect.getScene().getWindow());
+		Scene scene = new Scene(newWindow);
+		this.connectSolverWindow.setScene(scene);
+		this.connectSolverWindow.show();
+	}
+	public void closeConnectSolverWindow() {
+		if(this.connectWindow != null) {
+			this.connectWindow.close();
+			this.connectWindow = null;
+			this.statlabel.setText("Connection sent successfully to Interpreter");
+		}
+	}
 
 	public void loadData() {
 		this.csv = this.fileLoader();
@@ -137,13 +166,13 @@ public class ViewController implements Observer{
 			this.statlabel.setText("Error with CSV file, Try Again");
 	}
 
-	public void calcData() {
-		if (this.csv != null) {
-
-		} else {
-			/* Throw Exception */
-		}
-	}
+//	public void calcData() {
+//		if (this.csv != null) {
+//
+//		} else {
+//			/* Throw Exception */
+//		}
+//	}
 
 	public void loadTextFile() throws IOException {
 		this.txt = this.fileLoader();
@@ -180,11 +209,10 @@ public class ViewController implements Observer{
 	}
 
 	public void ManualIsPressed(){
-		/*if(this.manual.isSelected())
-			return;*/
 		if(this.autopilot.isSelected()) {
 			this.autopilot.setSelected(false);
 			this.vm.changeTab();
+			this.setRunningVars();
 		}
 		this.manual.setSelected(true);
 		this.statlabel.setText("Manual Controls mode - Initiated.");
@@ -193,6 +221,8 @@ public class ViewController implements Observer{
 		if(this.manual.isSelected()) {
 			this.manual.setSelected(false);
 			this.vm.changeTab();
+			this.disableRunningVars();
+			
 		}
 		this.autopilot.setSelected(true);
 		this.statlabel.setText("AutoPilot mode - Initiated.");
@@ -257,7 +287,29 @@ public class ViewController implements Observer{
 		}
 	}
 	public void markDestOnMap(MouseEvent e) {
-		this.guidemap.markDest(e.getX(), e.getY());
+		this.guidemap.setDest(e.getX(), e.getY());
+		
+		int[][] map = this.guidemap.getRawTable();
+		
+		int[] src = new int[2];
+		src[0] = this.guidemap.getCurrentXIndex();
+		src[1] = this.guidemap.getCurrentYIndex();
+		
+		int[] dst = new int[2];
+		dst[0] = this.guidemap.getDestXIndex();
+		dst[1] = this.guidemap.getDestYIndex();
+		System.out.println("" + dst[0] + "," + dst[1]);
+		
+		this.vm.generatePath(map, src, dst);
 	}
-
+	public void disableRunningVars() {
+		this.airspeed.textProperty().unbind();
+		this.altitude.textProperty().unbind();
+		this.airspeed.setText(na);
+		this.altitude.setText(na);
+	}
+	public void setRunningVars() {
+		this.airspeed.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.AIRSPEED));
+		this.altitude.textProperty().bind(this.vm.stringPropertiesMap.get(this.vm.ALT));
+	}
 }

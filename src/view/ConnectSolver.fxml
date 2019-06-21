@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="180.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ConnectSolverController">
+   <children>
+      <Text layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please Enter the Server's IP address and port number:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="28.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Solver IP Address:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text layoutX="28.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Solver Port:">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <TextField fx:id="ipText" layoutX="204.0" layoutY="45.0" prefHeight="27.0" prefWidth="209.0" promptText="IP Address" />
+      <TextField fx:id="portText" layoutX="204.0" layoutY="84.0" prefHeight="27.0" prefWidth="117.0" promptText="Telnet Port" />
+      <Label fx:id="status" layoutX="9.0" layoutY="141.0" text="Waiting for connection details..." />
+      <Button fx:id="connect" layoutX="350.0" layoutY="136.0" mnemonicParsing="false" onAction="#execute" text="Connect" />
+      <Button fx:id="defualts" layoutX="222.0" layoutY="136.0" mnemonicParsing="false" onAction="#setDefualts" text="Defualt Settings" />
+   </children>
+</AnchorPane>

@@ -20,6 +20,7 @@ public class SimulatorCom {
 	private PrintWriter pw = null;
 	private final int NULL_BUFFER_SIZE = 1024;
 	private byte[] nullBytes = new byte[NULL_BUFFER_SIZE]; 
+	@SuppressWarnings("unused")
 	private boolean isConnected = false; // Milestone 5
 
 	

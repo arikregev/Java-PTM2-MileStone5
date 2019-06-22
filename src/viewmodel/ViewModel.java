@@ -83,34 +83,46 @@ public class ViewModel extends Observable implements Observer{
 	public void stopWatchVals() {
 		this.t.cancel();
 	}
+	public void sendCommandToInterpreter(String s) { //being Used mainly by Connect Command
+		this.i.interpretLine(s);
+	}
 	public void getAutoPilotText() {
 		String[] lines = this.autoPilotText.getValue().split("\n");
 		for(int i = 0; i < lines.length; i++) {
-			this.i.interpretLine(lines[i]);
+			sendCommandToInterpreter(lines[i]);
 		}
 	}
 	public void changeTab() {
 		this.i.resetInterpreter();
 	}
-	public void sendCommandToInterpreter(String s) { //being Used mainly by Connect Command
-		this.i.interpretLine(s);
+	
+	private String doubleValueToString(double value) {
+		// this is to avoid doubles in a.bE-c format
+		if (Math.abs(value) < 0.0001) {
+			return "0.0";
+		}
+		return Double.toString(value);
 	}
+	
+	private void sendValueChanged(String valName, double value) {
+		sendCommandToInterpreter(valName + " = " + doubleValueToString(value));
+	}
+	
 	public void throttleChanged() {
-		this.i.interpretLine("throttle = " + this.throttle.get());
+		sendValueChanged("throttle", this.throttle.get());
 
 	}
 	public void rudderChanged() {
-		this.i.interpretLine("rudder = " + this.rudder.get());
+		sendValueChanged("rudder", this.rudder.get());
 	}
 	public void aileronChanged() {
-		this.i.interpretLine("aileron = " + this.alieron.get());
+		sendValueChanged("aileron", this.alieron.get());
 	}
 	public void elevatorChanged() {
-		this.i.interpretLine("elevator = " + this.elevator.get());
+		sendValueChanged("elevator", this.elevator.get());
 	}
 	public void flapsChanged() {
-		System.out.println("flaps = " + this.flaps.get());
-		this.i.interpretLine("flaps = " + this.flaps.get());
+		sendValueChanged("flaps", this.flaps.get());
 	}
 	@Override
 	public void update(Observable o, Object arg) {

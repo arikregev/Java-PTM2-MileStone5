@@ -21,7 +21,6 @@ while alt < 1000 {
 	aileron = - roll / 70
 	elevator = pitch / 50
 	print alt
-	print rudder
 	sleep 50
 }
 print "Done"

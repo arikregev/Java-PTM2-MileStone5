@@ -75,8 +75,7 @@ public class ViewController implements Observer{
 			}
 			if(arg instanceof List) {
 				this.guidemap.setDirections((List<String>)arg);
-				this.guidemap.redraw();
-				this.guidemap.drawPath();
+				this.guidemap.onPathGenerated();
 			}
 		}
 	}
@@ -167,6 +166,7 @@ public class ViewController implements Observer{
 		if (this.csv != null) {
 			this.statlabel.setText("CSV File updaoded Successfuly");
 			this.guidemap.generateMap(csv);
+			this.guidemap.onNewMapSelected();
 		} else
 			this.statlabel.setText("Error with CSV file, Try Again");
 	}
@@ -284,8 +284,7 @@ public class ViewController implements Observer{
 		}
 	}
 	public void markDestOnMap(MouseEvent e) {
-		this.guidemap.setDest(e.getX(), e.getY());
-		this.guidemap.drawDest();
+		this.guidemap.onDestPressed(e.getX(), e.getY());
 	}
 	public void disableRunningVars() {
 		this.airspeed.textProperty().unbind();
@@ -304,8 +303,8 @@ public class ViewController implements Observer{
 		int[][] map = this.guidemap.getRawTable();
 		
 		int[] src = new int[2];
-		src[0] = this.guidemap.getCurrentXIndex();
-		src[1] = this.guidemap.getCurrentYIndex();
+		src[0] = this.guidemap.getSrcXIndex();
+		src[1] = this.guidemap.getSrcYIndex();
 		
 		int[] dst = new int[2];
 		dst[0] = this.guidemap.getDestXIndex();

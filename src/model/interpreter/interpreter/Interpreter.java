@@ -103,9 +103,6 @@ public class Interpreter extends Observable {
 	public void interpretLine(String line){	
 		linesQueue.add(line);
 	}
-//	public Interpreter getProxyInterpreter() {
-//		return new ProxyInterpreter();
-//	}
 	
 	public void run() {
 		while(true) {

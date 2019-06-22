@@ -23,7 +23,10 @@ public class GuideMap extends Canvas{
 	private double rawScale;
 	private double blockGuiWidth, blockGuiHeight;
 	private int maxRawValue;
+	private double srcGuiX, srcGuiY;
 	private double destGuiX, destGuiY;
+	private double srcGuiXCandidate, srcGuiYCandidate;
+	private double destGuiXCandidate, destGuiYCandidate;
 	private double currGuiPosX, currGuiPosY;
 	private double currSimPosX, currSimPosY;
 	private Image plane;
@@ -31,11 +34,15 @@ public class GuideMap extends Canvas{
 	private ChangeListener<Number> positionXChangeListener;
 	private ChangeListener<Number> positionYChangeListener;
 	private List<String> directions = null;
+	private boolean isDestPressed = false;
+	private boolean isDestCandidateAvail = false;
 	private ViewModel vm = null;
 	
 	public GuideMap() {
 		this.currGuiPosX = 0.0;
 		this.currGuiPosY = 0.0;
+		this.srcGuiX = 0.0; 
+		this.srcGuiY = 0.0;
 		try {
 			this.plane = new Image(new FileInputStream("./resources/Plane-1.png"));
 			this.target = new Image(new FileInputStream("./resources/close.png"));
@@ -50,7 +57,8 @@ public class GuideMap extends Canvas{
 				currSimPosX = (Double)newValue;
 				if(temp < 0)
 					currGuiPosX = temp*-1;
-				else currGuiPosX = temp;
+				else 
+					currGuiPosX = temp;
 			}
 		};
 		positionYChangeListener = new ChangeListener<Number>() {
@@ -61,11 +69,10 @@ public class GuideMap extends Canvas{
 				currSimPosY = (Double)newValue;
 				if(temp < 0)
 					currGuiPosY = temp*-1;
-				else currGuiPosY = temp;
-				System.out.println("Sim (" + currSimPosX+","+ currSimPosY+") Gui (" + currGuiPosX + "," + currGuiPosY + ")");
-				redraw();
-				drawPath();
-				
+				else 
+					currGuiPosY = temp;
+				//System.out.println("Sim (" + currSimPosX+","+ currSimPosY+") Gui (" + currGuiPosX + "," + currGuiPosY + ")");
+				onPlanePositionChange();
 			}
 		};
 	}
@@ -74,6 +81,42 @@ public class GuideMap extends Canvas{
 		vm.doublePropertiesMap.get(ViewModel.LATITUDE).addListener(positionXChangeListener);
 		vm.doublePropertiesMap.get(ViewModel.LONGITUDE).addListener(positionYChangeListener);
 	}
+	
+	public void onPlanePositionChange() {
+		drawMap();
+		drawPlane();
+		drawDest();
+		drawDestCandidate();
+		drawPath();
+	}
+	
+	public void onNewMapSelected() {
+		resetPathAndDests();
+	}
+	
+	public void onDestPressed(double posX, double posY) {
+		this.resetPathAndDests();
+		this.destGuiXCandidate = posX;
+		this.destGuiYCandidate = posY;
+		this.srcGuiXCandidate = this.currGuiPosX;
+		this.srcGuiYCandidate = this.currGuiPosY;
+		this.isDestCandidateAvail = true;
+		this.drawDestCandidate();
+	}
+	
+	public void onPathGenerated() {
+		this.destGuiX = this.destGuiXCandidate;
+		this.destGuiY = this.destGuiYCandidate;
+		this.srcGuiX = this.srcGuiXCandidate;
+		this.srcGuiY = this.srcGuiYCandidate;
+		this.isDestPressed = this.isDestCandidateAvail;
+		this.isDestCandidateAvail = false;
+		drawMap();
+		drawPlane();
+		drawDest();
+		drawPath();
+	}
+	
 	public void setDirections(List<String> directions) {
 		this.directions = directions;
 	}
@@ -81,17 +124,17 @@ public class GuideMap extends Canvas{
 		return rawTable;
 	}
 	
-	public int getCurrentXIndex() {
-		return realToBlockIndexX(currGuiPosX);
+	public int getSrcXIndex() {
+		return realToBlockIndexX(srcGuiXCandidate);
 	}
-	public int getCurrentYIndex() {
-		return realToBlockIndexY(currGuiPosY);
+	public int getSrcYIndex() {
+		return realToBlockIndexY(srcGuiYCandidate);
 	}
 	public int getDestXIndex() {
-		return realToBlockIndexX(destGuiX);
+		return realToBlockIndexX(destGuiXCandidate);
 	}
 	public int getDestYIndex() {
-		return realToBlockIndexY(destGuiY);
+		return realToBlockIndexY(destGuiYCandidate);
 	}
 
 	private int realToBlockIndexX(double posX) {
@@ -109,8 +152,8 @@ public class GuideMap extends Canvas{
 	private double realToMiddleBlockY(double posY) {
 		return (realToBlockIndexY(posY) * this.blockGuiHeight) + (this.blockGuiHeight / 2);
 	}
-
-	public void redraw() {
+	
+	private void drawMap() {
 		if(this.rawTable == null)
 			return;
 		GraphicsContext gc = getGraphicsContext2D();
@@ -139,7 +182,6 @@ public class GuideMap extends Canvas{
 					gc.fillText(this.rawTable[i][j] + " ",  j*this.blockGuiWidth + 4, i*this.blockGuiHeight + this.blockGuiWidth - 4);
 				}
 			}
-		this.drawPlane();
 	}						
 	public void generateMap(File mapCsvFile) {
 		try {
@@ -178,15 +220,13 @@ public class GuideMap extends Canvas{
 				}
 				i++;
 			}
-
-	    	this.redraw();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void drawPlane() {
+	private void drawPlane() {
 		GraphicsContext gc = getGraphicsContext2D();
 		double size = 25;
 		gc.drawImage(this.plane,
@@ -196,52 +236,71 @@ public class GuideMap extends Canvas{
 				size);		
 	}
 	
-	public void drawDest() {
+	private void drawDestInner(double posX, double posY) {
 		int size = 15;
 		GraphicsContext gc = getGraphicsContext2D();
 		gc.drawImage(this.target, 
-				realToMiddleBlockX(destGuiX) - size / 2,
-				realToMiddleBlockY(destGuiY) - size / 2,
+				posX - size / 2,
+				posY - size / 2,
 				size, 
 				size);// draw the dest	
 	}
 	
-	public void setDest(double posX, double posY) {
-		this.destGuiX = posX;
-		this.destGuiY = posY;
+	private void drawDest() {
+		if (!isDestPressed)
+			return;
+		drawDestInner(realToMiddleBlockX(destGuiX), realToMiddleBlockY(destGuiY));
 	}
 	
-	public void drawPath() {
-		GraphicsContext gc = getGraphicsContext2D();
-		if (directions != null) {
-			double curX = realToMiddleBlockX(currGuiPosX);
-			double curY = realToMiddleBlockY(currGuiPosY);
-			
-			gc.beginPath();
-			gc.moveTo(curX, curY);
-			//gc.stroke();
-			
-			for (String d: directions) {
-				switch (d.toUpperCase()) {
-				case "UP":
-					curY -= blockGuiHeight;
-					break;
-				case "DOWN":
-					curY += blockGuiHeight;
-					break;
-				case "LEFT":
-					curX -= blockGuiWidth;
-					break;
-				case "RIGHT":
-					curX += blockGuiWidth;
-					break;
-				}
-				gc.lineTo(curX, curY);
-			}
-			gc.stroke();
-			gc.closePath();
-			drawDest();
+	private void drawDestCandidate() {
+		if (!isDestCandidateAvail)
+			return;
+		drawDestInner(realToMiddleBlockX(destGuiXCandidate), realToMiddleBlockY(destGuiYCandidate));	
+	}
+	
+	private void resetPathAndDests() {
+		this.directions = null;
+		this.isDestPressed = false;
+		this.isDestCandidateAvail = false;
+		drawMap();
+		drawPlane();
+	}
+	
+
+	
+	private void drawPath() {
+		if (directions == null) {
+			return;
 		}
+		GraphicsContext gc = getGraphicsContext2D();
+		double onCalcPosX, onCalcPosY;
+		onCalcPosX = realToMiddleBlockX(srcGuiX);
+		onCalcPosY = realToMiddleBlockY(srcGuiY);
+		
+		gc.beginPath();
+		gc.moveTo(onCalcPosX, onCalcPosY);
+		
+		//gc.stroke();
+		
+		for (String d: directions) {
+			switch (d.toUpperCase()) {
+			case "UP":
+				onCalcPosY -= blockGuiHeight;
+				break;
+			case "DOWN":
+				onCalcPosY += blockGuiHeight;
+				break;
+			case "LEFT":
+				onCalcPosX -= blockGuiWidth;
+				break;
+			case "RIGHT":
+				onCalcPosX += blockGuiWidth;
+				break;
+			}
+			gc.lineTo(onCalcPosX, onCalcPosY);
+		}
+		gc.stroke();
+		gc.closePath();
 		
 	}
 

@@ -1,19 +1,12 @@
 package view;
 	
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.interpreter.interpreter.Interpreter;
-import model.pathsolver.PathSolver;
-import model.pathsolver.PathSolverFactory;
-import model.pathsolver.ServerPathSolver;
-import model.pathsolver.StubPathSolver;
 import viewmodel.ServerPathSolverFactory;
 import viewmodel.ViewModel;
 
